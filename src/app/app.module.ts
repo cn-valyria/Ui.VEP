@@ -7,11 +7,13 @@ import { AdminComponent } from './admin/admin.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { AccountsComponent } from './admin/accounts/accounts.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminComponent
+    AdminComponent,
+    AccountsComponent
   ],
   imports: [
     BrowserModule,

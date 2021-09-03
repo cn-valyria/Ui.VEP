@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="section">
+        <h1 class="title">VEP Accounts</h1>
+        <h2 class="subtitle">Manage accounts enrolled in VEP, or enroll new accounts</h2>
+    </div>
+</div>
+<div class="container">
+    <div class="section">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+                <tr>
+                    <th>NationID</th>
+                    <th>Ruler</th>
+                    <th>Nation</th>
+                    <th>Discord</th>
+                    <th>DiscordID</th>
+                    <th>PSW</th>
+                    <th>VA</th>
+                    <th>FM</th>
+                    <th>FAC</th>
+                    <th>DRA</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let account of accounts;">
+                    <td>
+                        {{ account.nationId }}
+                    </td>
+                    <td>
+                        {{ account.rulerName }}
+                    </td>
+                    <td>
+                        {{ account.nationName }}
+                    </td>
+                    <td>
+                        {{ account.discord }}
+                    </td>
+                    <td>
+                        {{ account.discordId }}
+                    </td>
+                    <td>
+                        {{ account.secretCode }}
+                    </td>
+                    <td>
+                        {{ account.role }}
+                    </td>
+                    <td>
+                        {{ account.hasForeignMinistry }}
+                    </td>
+                    <td>
+                        {{ account.hasFederalAidCommission }}
+                    </td>
+                    <td>
+                        {{ account.hasDisasterReliefAgency }}
+                    </td>
+                    <td>
+                        <div class="buttons are-small">
+                            <button class="button is-info">Edit</button>
+                            <button class="button is-danger">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
