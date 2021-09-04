@@ -8,6 +8,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AccountsComponent } from './admin/accounts/accounts.component';
+import { AccountService } from './services/account.service';
+import { VepAdminStore } from './store';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,7 @@ import { AccountsComponent } from './admin/accounts/accounts.component';
     NoopAnimationsModule,
     MatToolbarModule
   ],
-  providers: [],
+  providers: [AccountService, VepAdminStore],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
