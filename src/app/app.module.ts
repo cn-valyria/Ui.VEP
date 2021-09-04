@@ -10,12 +10,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AccountsComponent } from './admin/accounts/accounts.component';
 import { AccountService } from './services/account.service';
 import { VepAdminStore } from './store';
+import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminComponent,
-    AccountsComponent
+    AccountsComponent,
+    AccountEditDialog
   ],
   imports: [
     BrowserModule,

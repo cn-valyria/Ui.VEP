@@ -1,0 +1,16 @@
+<div class="modal" [class.is-active]="isVisible">
+    <div class="modal-background" (click)="isVisible = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ account?.rulerName }}'s Account</p>
+            <button class="delete" aria-label="close" (click)="isVisible = false"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Some things would go here. Testing that this still works</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success">Save</button>
+            <button class="button">Cancel</button>
+        </footer>
+    </div>
+</div>
