@@ -9,6 +9,7 @@ import { AccountService } from "../services/account.service";
 export class VepAdminStore {
     
     // Internal properties
+    private _accounts: Account[] = [];
     private store: Store;
     private actions: ActionSet;
     
@@ -22,7 +23,7 @@ export class VepAdminStore {
 
         this.actions = {
             loadAllAccounts: () => this.loadAllAccounts(),
-            deleteAccount: (accountId: number) => {}
+            deleteAccount: (accountId: number) => this.deleteAccount(accountId)
         }
     }
 
@@ -40,7 +41,15 @@ export class VepAdminStore {
     // Internal action implementations
     private loadAllAccounts(): void {
         const data = this.accountService.getAllAccounts();
-        this.store.accounts.next(data);
+        this._accounts = [...data];
+        this.store.accounts.next([...this._accounts]);
+    }
+
+    private deleteAccount(accountId: number): void {
+        this._accounts.forEach((account, i) => {
+            if (account.nationId === accountId) { this._accounts.splice(i, 1) }
+        });
+        this.store.accounts.next([...this._accounts]);
     }
 }
 

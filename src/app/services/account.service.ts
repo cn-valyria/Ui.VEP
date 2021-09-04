@@ -47,7 +47,7 @@ export class AccountService {
         hasDisasterReliefAgency: false
       },
       {
-        nationId: 12345,
+        nationId: 98728,
         rulerName: "New Guy",
         nationName: "Smol Boi",
         discord: "mrrandomperson:1342",

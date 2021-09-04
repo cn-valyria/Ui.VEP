@@ -31,6 +31,10 @@ export class AccountsComponent implements OnInit {
     this.store$.dispatch('loadAllAccounts');
   }
 
+  deleteAccount(accountId: number): void {
+    this.store$.dispatch('deleteAccount', accountId);
+  }
+
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
