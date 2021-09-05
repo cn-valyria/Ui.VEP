@@ -6,11 +6,11 @@ import { AppComponent } from './app.component';
 import { AdminComponent } from './admin/admin.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { AccountsComponent } from './admin/accounts/accounts.component';
 import { AccountService } from './services/account.service';
 import { VepAdminStore } from './store';
 import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import { AccountEditDialog } from './admin/accounts/account-edit-dialog.componen
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
-    MatToolbarModule
+    ReactiveFormsModule
   ],
   providers: [AccountService, VepAdminStore],
   bootstrap: [AppComponent]

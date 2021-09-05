@@ -1,16 +1,112 @@
 <div class="modal" [class.is-active]="isVisible">
     <div class="modal-background" (click)="isVisible = false"></div>
     <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">{{ account?.rulerName }}'s Account</p>
-            <button class="delete" aria-label="close" (click)="isVisible = false"></button>
-        </header>
-        <section class="modal-card-body">
-            <p>Some things would go here. Testing that this still works</p>
-        </section>
-        <footer class="modal-card-foot">
-            <button class="button is-success">Save</button>
-            <button class="button">Cancel</button>
-        </footer>
+        <form [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+            <header class="modal-card-head">
+                <p class="modal-card-title">{{ account?.rulerName }}'s Account</p>
+                <button class="delete" aria-label="close" (click)="isVisible = false"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Nation ID</label>
+                    <div class="control">
+                        <input class="input" type="text" formControlName="nationId" placeholder="The account's NationID" />
+                    </div>
+                </div>
+                <fieldset disabled>
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field">
+                                <label class="label">Nation Name</label>
+                                <div class="control">
+                                    <input class="input" type="text" />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Ruler Name</label>
+                                <div class="control">
+                                    <input class="input" type="text" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="field">
+                    <label class="label">Role</label>
+                    <div class="control is-expanded">
+                        <div class="select is-fullwidth">
+                            <select formControlName="role">
+                                <option *ngFor="let role of roles" [ngValue]="role">{{ role }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Secret Code</label>
+                    <div class="control">
+                        <input class="input" type="text" formControlName="secretCode" />
+                    </div>
+                </div>
+                <div class="field is-horizontal" formGroupName="discord">
+                    <div class="field-body">
+                        <div class="field">
+                            <label class="label">Discord ID</label>
+                            <div class="control">
+                                <input class="input" type="text" formControlName="id" placeholder="e.g. username:1234" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Discord Discriminator</label>
+                            <div class="control">
+                                <input class="input" type="text" formControlName="discriminator" placeholder="e.g. 318737615257993226" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <label class="label">Has Foreign Ministry?</label>
+                        <label class="radio">
+                            <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="true" />
+                            Yes
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="false" />
+                            No
+                        </label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <label class="label">Has Federal Aid Commission?</label>
+                        <label class="radio">
+                            <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="true" />
+                            Yes
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="false" />
+                            No
+                        </label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <label class="label">Has Disaster Relief Agency?</label>
+                        <label class="radio">
+                            <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="true" />
+                            Yes
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="false" />
+                            No
+                        </label>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success">Save</button>
+                <button class="button">Cancel</button>
+            </footer>
+        </form>
     </div>
 </div>
