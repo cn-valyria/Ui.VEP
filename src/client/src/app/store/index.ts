@@ -40,9 +40,10 @@ export class VepAdminStore {
 
     // Internal action implementations
     private loadAllAccounts(): void {
-        const data = this.accountService.getAllAccounts();
-        this._accounts = [...data];
-        this.store.accounts.next([...this._accounts]);
+        this.accountService.getAllAccounts().then(data => {
+            this._accounts = [...data];
+            this.store.accounts.next([...this._accounts]);
+        });
     }
 
     private deleteAccount(accountId: number): void {

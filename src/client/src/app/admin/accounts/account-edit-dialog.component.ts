@@ -9,18 +9,18 @@ import { Account } from "src/app/models/account";
 export class AccountEditDialog {
 
     roles: string[] = [
-        "Not Participating",
-        "Buyer",
-        "Seller",
-        "Donor",
-        "Farm",
-        "Collector",
-        "Receiver",
-        "Probationary Seller",
-        "Temp Donor",
-        "Temp Farm",
-        "Temp Collector",
-        "Temp Receiver"
+        "H",
+        "B",
+        "S",
+        "D",
+        "F",
+        "C",
+        "R",
+        "N",
+        "P",
+        "V",
+        "Q",
+        "W"
     ];
 
     private _account: Account | undefined;
@@ -30,11 +30,13 @@ export class AccountEditDialog {
         if (val !== undefined) {
             this.accountForm.setValue({
                 nationId: val.nationId,
+                nationName: val.nationName,
+                rulerName: val.rulerName,
                 role: val.role,
-                secretCode: val.secretCode,
+                secretCode: val.uniqueCode,
                 discord: {
-                    id: val.discord ?? "",
-                    discriminator: val.discordId
+                    id: val.discord || "",
+                    discriminator: val.discordUniqueId
                 },
                 hasForeignMinistry: val.hasForeignMinistry,
                 hasFederalAidCommission: val.hasFederalAidCommission,
@@ -61,6 +63,8 @@ export class AccountEditDialog {
 
     accountForm = new FormGroup({
         nationId: new FormControl(''),
+        nationName: new FormControl(''),
+        rulerName: new FormControl(''),
         role: new FormControl(''),
         secretCode: new FormControl(''),
         discord: new FormGroup({

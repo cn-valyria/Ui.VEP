@@ -11,6 +11,7 @@ import { AccountService } from './services/account.service';
 import { VepAdminStore } from './store';
 import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     NoopAnimationsModule,
     ReactiveFormsModule
