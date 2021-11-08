@@ -40,7 +40,23 @@ export class AccountEditDialog {
                 },
                 hasForeignMinistry: val.hasForeignMinistry,
                 hasFederalAidCommission: val.hasFederalAidCommission,
-                hasDisasterReliefAgency: val.hasDisasterReliefAgency
+                hasDisasterReliefAgency: val.hasDisasterReliefAgency,
+                slotsFree: val.slotsFull - val.slotsUsed,
+                slotsFull: val.slotsFull,
+                balance: {
+                    credit: val.credit,
+                    debt: 0, //val.debt,
+                    balance: 0, //val.balance
+                },
+                cashSentTechCredit: val.cashSentTechCredit,
+                cashReceivedTechCredit: val.cashReceivedTechCredit,
+                cashSentCashCredit: val.cashSentCashCredit,
+                cashReceivedCashCredit: val.cashReceivedCashCredit,
+                techSentCashCredit: val.techSentCashCredit,
+                techReceivedCashCredit: val.techReceivedCashCredit,
+                techSentTechCredit: val.techSentTechCredit,
+                techReceivedTechCredit: val.techReceivedTechCredit,
+                previousListOrder: val.previousListOrder
             });
         }
     }
@@ -73,7 +89,23 @@ export class AccountEditDialog {
         }),
         hasForeignMinistry: new FormControl(false),
         hasFederalAidCommission: new FormControl(false),
-        hasDisasterReliefAgency: new FormControl(false)
+        hasDisasterReliefAgency: new FormControl(false),
+        slotsFree: new FormControl(0),
+        slotsFull: new FormControl(0),
+        balance: new FormGroup({
+            credit: new FormControl(0),
+            debt: new FormControl(0),
+            balance: new FormControl(0)
+        }),
+        cashSentTechCredit: new FormControl(0),
+        cashReceivedTechCredit: new FormControl(0),
+        cashSentCashCredit: new FormControl(0),
+        cashReceivedCashCredit: new FormControl(0),
+        techSentCashCredit: new FormControl(0),
+        techReceivedCashCredit: new FormControl(0),
+        techSentTechCredit: new FormControl(0),
+        techReceivedTechCredit: new FormControl(0),
+        previousListOrder: new FormControl(0)
     });
 
     onSubmit() {

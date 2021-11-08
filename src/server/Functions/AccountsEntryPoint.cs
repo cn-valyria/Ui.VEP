@@ -18,8 +18,8 @@ namespace Functions
 
         public AccountsEntryPoint(IAccountsRepository accountsRepository) => _accountsRepository = accountsRepository;
 
-        [FunctionName("getAllAccounts")]
-        public async Task<IActionResult> GetAll(
+        [FunctionName("accounts")]
+        public async Task<IActionResult> GetAllAccounts(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -39,5 +39,12 @@ namespace Functions
                 return new BadRequestObjectResult("Unexpected error occurred while executing GetAllAccounts");
             }
         }
+
+        // public async Task<IActionResult> SaveAccount(
+        //     [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest request,
+        //     ILogger logger)
+        // {
+            
+        // }
     }
 }

@@ -16,6 +16,6 @@ export class AccountService {
   }
 
   getAllAccounts(): Promise<Account[]> {
-    return this.http.get<Account[]>(`${this.apiUrl}/getAllAccounts`).toPromise();
+    return this.http.get<Account[]>(`${this.apiUrl}/accounts`).toPromise();
   }
 }
