@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import { Account } from "src/app/models/account";
+import { VepAdminStore } from "src/app/store";
 
 @Component({
     selector: 'account-editor-dialog',
@@ -85,7 +86,7 @@ export class AccountEditDialog {
         secretCode: new FormControl(''),
         discord: new FormGroup({
             id: new FormControl(''),
-            discriminator: new FormControl('')
+            discriminator: new FormControl(0)
         }),
         hasForeignMinistry: new FormControl(false),
         hasFederalAidCommission: new FormControl(false),
@@ -108,7 +109,23 @@ export class AccountEditDialog {
         previousListOrder: new FormControl(0)
     });
 
-    onSubmit() {
+    constructor(private store$: VepAdminStore) { }
+
+    save() {
         console.log(this.accountForm.value);
+        if (this.account === undefined) {
+            return;
+        }
+
+        this.store$.dispatch("updateAccount", {
+            id: this.account.id,
+            role: this.accountForm.value.role,
+            uniqueCode: this.accountForm.value.secretCode,
+            discord: this.accountForm.value.discord.id,
+            discordUniqueId: +this.accountForm.value.discord.discriminator,
+            hasForeignMinistry: this.accountForm.value.hasForeignMinistry,
+            hasFederalAidCommission: this.accountForm.value.hasFederalAidCommission,
+            hasDisasterReliefAgency: this.accountForm.value.hasDisasterReliefAgency
+        });
     }
 }

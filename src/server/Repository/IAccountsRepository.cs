@@ -7,5 +7,7 @@ namespace Repository
     public interface IAccountsRepository
     {
         Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync();
+
+        Task UpdateAccountAsync(AccountToUpdate account);
     }
 }

@@ -23,6 +23,7 @@ export class VepAdminStore {
 
         this.actions = {
             loadAllAccounts: () => this.loadAllAccounts(),
+            updateAccount: (account: Account) => this.updateAccount(account),
             deleteAccount: (accountId: number) => this.deleteAccount(accountId)
         }
     }
@@ -46,6 +47,25 @@ export class VepAdminStore {
         });
     }
 
+    private updateAccount(account: Account): void {
+        this.accountService.updateAccount(account).then(() => {
+            const i = this._accounts.findIndex(a => a.id === account.id);
+            const updatedAccount = {
+                ...this._accounts[i],
+                role: account.role,
+                uniqueCode: account.uniqueCode,
+                discord: account.discord,
+                discordUniqueId: account.discordUniqueId,
+                hasForeignMinistry: account.hasForeignMinistry,
+                hasFederalAidCommission: account.hasFederalAidCommission,
+                hasDisasterReliefAgency: account.hasDisasterReliefAgency
+            };
+
+            this._accounts = [...this._accounts.splice(0, i), updatedAccount, ...this._accounts.splice(i + 1)];
+            this.store.accounts.next(this._accounts);
+        });
+    }
+
     private deleteAccount(accountId: number): void {
         this._accounts.forEach((account, i) => {
             if (account.nationId === accountId) { this._accounts.splice(i, 1) }
@@ -60,5 +80,6 @@ interface Store {
 
 interface ActionSet {
     loadAllAccounts: (payload: any) => void;
+    updateAccount: (payload: any) => void;
     deleteAccount: (payload: any) => void;
 }

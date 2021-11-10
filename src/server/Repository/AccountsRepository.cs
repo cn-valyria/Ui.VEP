@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using MySqlConnector;
 using Repository.DTO;
+using Repository.Infrastructure;
 
 namespace Repository
 {
@@ -78,6 +79,41 @@ left join (
 
             using var sqlConnection = new MySqlConnection(_connectionString);
             return await sqlConnection.QueryAsync<AccountDetail>(query);
+        }
+
+        public async Task UpdateAccountAsync(AccountToUpdate account)
+        {
+            using var sqlConnection = new MySqlConnection(_connectionString);
+            var accountExists = await sqlConnection.QueryFirstAsync<bool?>(
+                "select 1 from account where id = @id limit 1",
+                new { id = account.Id });
+
+            if (!(accountExists ?? false))
+                throw new NotFoundException($"Unable to find an account to update by ID {account.Id}.");
+
+            const string query = @"
+update vep_db.account
+set
+	discord = @discord,
+    discord_id = @discord_id,
+    psw = @unique_code,
+    va = @role,
+    fm = @has_fm,
+    fac = @has_fac,
+    dra = @has_dra
+where id = @id";
+
+            await sqlConnection.ExecuteAsync(query, new
+            {
+                id = account.Id,
+                role = account.Role,
+                unique_code = account.UniqueCode,
+                discord = account.Discord,
+                discord_id = account.DiscordUniqueId,
+                has_fm = account.HasForeignMinistry,
+                has_fac = account.HasFederalAidCommission,
+                has_dra = account.HasDisasterReliefAgency
+            });
         }
     }
 }

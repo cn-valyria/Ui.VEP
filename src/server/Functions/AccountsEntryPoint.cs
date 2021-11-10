@@ -1,13 +1,15 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Repository;
+using Repository.DTO;
+using Repository.Infrastructure;
 using System.Linq;
 
 namespace Functions
@@ -18,12 +20,12 @@ namespace Functions
 
         public AccountsEntryPoint(IAccountsRepository accountsRepository) => _accountsRepository = accountsRepository;
 
-        [FunctionName("accounts")]
+        [FunctionName(nameof(GetAllAccounts))]
         public async Task<IActionResult> GetAllAccounts(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Beginning execution for GetAllAccounts method...");
+            log.LogInformation($"Beginning execution for {nameof(GetAllAccounts)} method...");
 
             try
             {
@@ -40,11 +42,32 @@ namespace Functions
             }
         }
 
-        // public async Task<IActionResult> SaveAccount(
-        //     [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest request,
-        //     ILogger logger)
-        // {
-            
-        // }
+        [FunctionName(nameof(UpdateAccount))]
+        public async Task<IActionResult> UpdateAccount(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "accounts")] HttpRequest request,
+            ILogger log)
+        {
+            log.LogInformation($"Beginning execution for {nameof(UpdateAccount)} method...");
+
+            try
+            {
+                var content = await new StreamReader(request.Body).ReadToEndAsync();
+                var accountToUpdate = JsonSerializer.Deserialize<AccountToUpdate>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                await _accountsRepository.UpdateAccountAsync(accountToUpdate);
+
+                return new OkResult();
+            }
+            catch (NotFoundException e)
+            {
+                log.LogWarning(e.Message);
+                return new NotFoundObjectResult(e.Message);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, $"Unexpected error occurred while executing {nameof(UpdateAccount)}");
+                return new BadRequestObjectResult($"Unexpected error occurred while executing {nameof(UpdateAccount)}");
+            }
+        }
     }
 }

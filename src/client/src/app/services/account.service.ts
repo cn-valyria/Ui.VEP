@@ -18,4 +18,8 @@ export class AccountService {
   getAllAccounts(): Promise<Account[]> {
     return this.http.get<Account[]>(`${this.apiUrl}/accounts`).toPromise();
   }
+
+  updateAccount(account: Account): Promise<Object> {
+    return this.http.put(`${this.apiUrl}/accounts`, account).toPromise();
+  }
 }
