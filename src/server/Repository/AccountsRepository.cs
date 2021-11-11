@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -83,14 +84,10 @@ left join (
 
         public async Task UpdateAccountAsync(AccountToUpdate account)
         {
-            using var sqlConnection = new MySqlConnection(_connectionString);
-            var accountExists = await sqlConnection.QueryFirstAsync<bool?>(
-                "select 1 from account where id = @id limit 1",
-                new { id = account.Id });
-
-            if (!(accountExists ?? false))
+            if (!await AccountExists(account.Id))
                 throw new NotFoundException($"Unable to find an account to update by ID {account.Id}.");
 
+            using var sqlConnection = new MySqlConnection(_connectionString);
             const string query = @"
 update vep_db.account
 set
@@ -114,6 +111,52 @@ where id = @id";
                 has_fac = account.HasFederalAidCommission,
                 has_dra = account.HasDisasterReliefAgency
             });
+        }
+
+        public async Task RemoveAccountAsync(int accountId)
+        {
+            if (!await AccountExists(accountId))
+                throw new NotFoundException($"Unable to find an account to delete by ID {accountId}");
+
+            using var sqlConnection = new MySqlConnection(_connectionString);
+            const string auditQuery = @"
+insert into account_removed (
+    `nation_id`, 
+    `discord`, 
+    `discord_id`, 
+    `psw`, 
+    `va`, 
+    `fm`, 
+    `fac`, 
+    `dra`, 
+    `removed_on`
+)
+select
+    `nation_id`, 
+    `discord`, 
+    `discord_id`, 
+    `psw`, 
+    `va`, 
+    `fm`, 
+    `fac`, 
+    `dra`, 
+    curdate()
+from account
+where id = @id";
+            await sqlConnection.ExecuteAsync(auditQuery, new { id = accountId });
+            await sqlConnection.ExecuteAsync(
+                "delete from account where id = @id",
+                new { id = accountId });
+        }
+
+        private async Task<bool> AccountExists(int accountId)
+        {
+            using var sqlConnection = new MySqlConnection(_connectionString);
+            var accountExists = await sqlConnection.QueryFirstAsync<bool?>(
+                "select 1 from account where id = @id limit 1",
+                new { id = accountId });
+
+            return accountExists ?? false;
         }
     }
 }

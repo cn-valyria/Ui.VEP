@@ -9,5 +9,7 @@ namespace Repository
         Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync();
 
         Task UpdateAccountAsync(AccountToUpdate account);
+
+        Task RemoveAccountAsync(int accountId);
     }
 }

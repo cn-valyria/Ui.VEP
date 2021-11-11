@@ -22,4 +22,8 @@ export class AccountService {
   updateAccount(account: Account): Promise<Object> {
     return this.http.put(`${this.apiUrl}/accounts`, account).toPromise();
   }
+
+  deleteAccount(accountId: number): Promise<Object> {
+    return this.http.delete(`${this.apiUrl}/accounts/${accountId}`).toPromise();
+  }
 }

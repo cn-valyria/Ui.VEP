@@ -67,10 +67,13 @@ export class VepAdminStore {
     }
 
     private deleteAccount(accountId: number): void {
-        this._accounts.forEach((account, i) => {
-            if (account.nationId === accountId) { this._accounts.splice(i, 1) }
+        this.accountService.deleteAccount(accountId).then(() => {
+            const i = this._accounts.findIndex(a => a.id === accountId);
+            const accounts = [...this._accounts];
+            accounts.splice(i, 1);
+            this._accounts = accounts;
+            this.store.accounts.next(this._accounts);
         });
-        this.store.accounts.next([...this._accounts]);
     }
 }
 

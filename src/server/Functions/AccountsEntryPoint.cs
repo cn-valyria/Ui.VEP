@@ -69,5 +69,33 @@ namespace Functions
                 return new BadRequestObjectResult($"Unexpected error occurred while executing {nameof(UpdateAccount)}");
             }
         }
+
+        [FunctionName(nameof(RemoveAccount))]
+        public async Task<IActionResult> RemoveAccount(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "accounts/{id}")] HttpRequest request,
+            int? id,
+            ILogger log)
+        {
+            log.LogInformation($"Beginning execution for {nameof(RemoveAccount)} method...");
+
+            if (id is null)
+                return new BadRequestObjectResult("Must provide an ID to delete in the request");
+
+            try
+            {
+                await _accountsRepository.RemoveAccountAsync(id.Value);
+                return new OkResult();
+            }
+            catch (NotFoundException e)
+            {
+                log.LogWarning(e.Message);
+                return new NotFoundObjectResult(e.Message);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, $"Unexpected error occurred while executing {nameof(RemoveAccount)}");
+                return new BadRequestObjectResult($"Unexpected error occurred while executing {nameof(RemoveAccount)}");
+            }
+        }
     }
 }
