@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Account } from 'src/app/models/account';
@@ -9,7 +9,7 @@ import { VepAdminStore } from 'src/app/store';
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss']
 })
-export class AccountsComponent implements OnInit {
+export class AccountsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
@@ -33,8 +33,12 @@ export class AccountsComponent implements OnInit {
     this.store$.dispatch('loadAllAccounts');
   }
 
+  createNewAccount(): void {
+    this.accountEditorIsVisible = true;
+  }
+
   editAccount(accountId: number): void {
-    const account = this.accounts.find(acc => acc.nationId === accountId);
+    const account = this.accounts.find(acc => acc.id === accountId);
     if (account !== undefined) {
       this.accountBeingEdited = Object.assign({}, account);
       this.accountEditorIsVisible = true

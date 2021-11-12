@@ -1,13 +1,19 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
+import { Subject, Subscription } from "rxjs";
+import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { Account } from "src/app/models/account";
+import { AccountService } from "src/app/services/account.service";
 import { VepAdminStore } from "src/app/store";
 
 @Component({
     selector: 'account-editor-dialog',
     templateUrl: './account-edit-dialog.component.html'
 })
-export class AccountEditDialog {
+export class AccountEditDialog implements OnInit, OnDestroy {
+
+    private nationIdTextChangesUnsubscribe = new Subject();
 
     roles: string[] = [
         "H",
@@ -23,6 +29,9 @@ export class AccountEditDialog {
         "Q",
         "W"
     ];
+
+    prospectSearchHadError: boolean = false;
+    prospectSearchError: string = "";
 
     private _account: Account | undefined;
     @Input()
@@ -59,6 +68,8 @@ export class AccountEditDialog {
                 techReceivedTechCredit: val.techReceivedTechCredit,
                 previousListOrder: val.previousListOrder
             });
+        } else {
+            this.accountForm.reset();
         }
     }
     get account(): Account | undefined {
@@ -109,7 +120,45 @@ export class AccountEditDialog {
         previousListOrder: new FormControl(0)
     });
 
-    constructor(private store$: VepAdminStore) { }
+    constructor(private store$: VepAdminStore, private accountService$: AccountService) { }
+
+    ngOnInit(): void {
+        this.accountForm.get("nationId")
+            ?.valueChanges
+            .pipe(
+                debounceTime(500),
+                distinctUntilChanged(),
+                takeUntil(this.nationIdTextChangesUnsubscribe)
+            )
+            .subscribe(nationId => {
+                this.prospectSearchHadError = false;
+                this.prospectSearchError = "";
+
+                if (this.account === undefined && nationId !== undefined && nationId !== "" && !isNaN(parseInt(nationId))) {
+                    this.accountService$.findProspect(nationId)
+                        .then((prospect) => {
+                            this.accountForm.patchValue({
+                                nationName: prospect.nationName,
+                                rulerName: prospect.rulerName
+                            });
+                        })
+                        .catch((err: HttpErrorResponse) => {
+                            console.error(err);
+                            this.prospectSearchHadError = true;
+                            this.prospectSearchError = err.error;
+                            this.accountForm.patchValue({
+                                nationName: "",
+                                rulerName: ""
+                            });
+                        });
+                }
+            });
+    }
+
+    ngOnDestroy(): void {
+      this.nationIdTextChangesUnsubscribe.next();
+      this.nationIdTextChangesUnsubscribe.complete();
+    }
 
     save() {
         console.log(this.accountForm.value);
@@ -127,5 +176,15 @@ export class AccountEditDialog {
             hasFederalAidCommission: this.accountForm.value.hasFederalAidCommission,
             hasDisasterReliefAgency: this.accountForm.value.hasDisasterReliefAgency
         });
+    }
+
+    create() {
+        console.log(this.accountForm.value);
+        this.store$.dispatch("createAccount", parseInt(this.accountForm.get("nationId")?.value));
+    }
+
+    close(): void {
+        this.account = undefined;
+        this.isVisible = false;
     }
 }

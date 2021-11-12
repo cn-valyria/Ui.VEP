@@ -1,20 +1,24 @@
 <div class="modal" [class.is-active]="isVisible">
-    <div class="modal-background" (click)="isVisible = false"></div>
+    <div class="modal-background" (click)="close()"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">{{ account?.rulerName }}'s Account</p>
-            <button class="delete" aria-label="close" (click)="isVisible = false"></button>
+            <p class="modal-card-title" *ngIf="account !== undefined; else elseBlock">{{ account.rulerName }}'s Account</p>
+            <ng-template #elseBlock><p class="modal-card-title">New Account</p></ng-template>
+            <button class="delete" aria-label="close" (click)="close()"></button>
         </header>
         <section class="modal-card-body">
             <div class="content">
                 <form [formGroup]="accountForm">
                     <h2>Account Data</h2>
-                    <div class="field">
-                        <label class="label">Nation ID</label>
-                        <div class="control">
-                            <input class="input" type="text" formControlName="nationId" placeholder="The account's NationID" />
+                    <fieldset [disabled]="account !== undefined">
+                        <div class="field">
+                            <label class="label">Nation ID</label>
+                            <div class="control">
+                                <input class="input" [class.is-danger]="prospectSearchHadError" type="text" formControlName="nationId" placeholder="The account's NationID" />
+                            </div>
+                            <p class="help is-danger">{{ prospectSearchError }}</p>
                         </div>
-                    </div>
+                    </fieldset>
                     <fieldset disabled>
                         <div class="field is-horizontal">
                             <div class="field-body">
@@ -33,180 +37,183 @@
                             </div>
                         </div>
                     </fieldset>
-                    <div class="field">
-                        <label class="label">Role</label>
-                        <div class="control is-expanded">
-                            <div class="select is-fullwidth">
-                                <select formControlName="role">
-                                    <option *ngFor="let role of roles" [ngValue]="role">{{ role }}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">Secret Code</label>
-                        <div class="control">
-                            <input class="input" type="text" formControlName="secretCode" />
-                        </div>
-                    </div>
-                    <div class="field is-horizontal" formGroupName="discord">
-                        <div class="field-body">
-                            <div class="field">
-                                <label class="label">Discord ID</label>
-                                <div class="control">
-                                    <input class="input" type="text" formControlName="id" placeholder="e.g. username:1234" />
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="label">Discord Discriminator</label>
-                                <div class="control">
-                                    <input class="input" type="text" formControlName="discriminator" placeholder="e.g. 318737615257993226" />
+                    <fieldset *ngIf="account !== undefined">
+                        <div class="field">
+                            <label class="label">Role</label>
+                            <div class="control is-expanded">
+                                <div class="select is-fullwidth">
+                                    <select formControlName="role">
+                                        <option *ngFor="let role of roles" [ngValue]="role">{{ role }}</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <label class="label">Has Foreign Ministry?</label>
-                            <label class="radio">
-                                <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="true" />
-                                Yes
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="false" />
-                                No
-                            </label>
+                        <div class="field">
+                            <label class="label">Secret Code</label>
+                            <div class="control">
+                                <input class="input" type="text" formControlName="secretCode" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <label class="label">Has Federal Aid Commission?</label>
-                            <label class="radio">
-                                <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="true" />
-                                Yes
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="false" />
-                                No
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <label class="label">Has Disaster Relief Agency?</label>
-                            <label class="radio">
-                                <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="true" />
-                                Yes
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="false" />
-                                No
-                            </label>
-                        </div>
-                    </div>
-                    <h2>Transactional Data</h2>
-                    <fieldset disabled>
-                        <div class="field is-horizontal">
+                        <div class="field is-horizontal" formGroupName="discord">
                             <div class="field-body">
                                 <div class="field">
-                                    <label class="label">Slots Free</label>
+                                    <label class="label">Discord ID</label>
                                     <div class="control">
-                                        <input class="input" type="text" formControlName="slotsFree" />
+                                        <input class="input" type="text" formControlName="id" placeholder="e.g. username:1234" />
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <label class="label">Slots Full</label>
+                                    <label class="label">Discord Discriminator</label>
                                     <div class="control">
-                                        <input class="input" type="text" formControlName="slotsFull" />
+                                        <input class="input" type="text" formControlName="discriminator" placeholder="e.g. 318737615257993226" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="field is-horizontal" formGroupName="balance">
-                            <div class="field-body">
-                                <div class="field">
-                                    <label class="label">Credit</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="credit" />
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Has Foreign Ministry?</label>
+                                <label class="radio">
+                                    <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="true" />
+                                    Yes
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="hasForeignMinistry" formControlName="hasForeignMinistry" [value]="false" />
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Has Federal Aid Commission?</label>
+                                <label class="radio">
+                                    <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="true" />
+                                    Yes
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="hasFederalAidCommission" formControlName="hasFederalAidCommission" [value]="false" />
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Has Disaster Relief Agency?</label>
+                                <label class="radio">
+                                    <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="true" />
+                                    Yes
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="hasDisasterReliefAgency" formControlName="hasDisasterReliefAgency" [value]="false" />
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                        <h2>Transactional Data</h2>
+                        <fieldset disabled>
+                            <div class="field is-horizontal">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Slots Free</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="slotsFree" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Debt</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="debt" />
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Balance</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="balance" />
+                                    <div class="field">
+                                        <label class="label">Slots Full</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="slotsFull" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="field is-horizontal">
-                            <div class="field-body">
-                                <div class="field">
-                                    <label class="label">Cash Sent (Cash)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="cashSentCashCredit" />
+                            <div class="field is-horizontal" formGroupName="balance">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Credit</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="credit" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Cash Rec'd (Cash)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="cashReceivedCashCredit" />
+                                    <div class="field">
+                                        <label class="label">Debt</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="debt" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Tech Sent (Cash)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="techSentCashCredit" />
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Tech Rec'd (Cash)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="techReceivedCashCredit" />
+                                    <div class="field">
+                                        <label class="label">Balance</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="balance" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="field is-horizontal">
-                            <div class="field-body">
-                                <div class="field">
-                                    <label class="label">Cash Sent (Tech)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="cashSentTechCredit" />
+                            <div class="field is-horizontal">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Cash Sent (Cash)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="cashSentCashCredit" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Cash Rec'd (Tech)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="cashReceivedTechCredit" />
+                                    <div class="field">
+                                        <label class="label">Cash Rec'd (Cash)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="cashReceivedCashCredit" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Tech Sent (Tech)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="techSentTechCredit" />
+                                    <div class="field">
+                                        <label class="label">Tech Sent (Cash)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="techSentCashCredit" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field">
-                                    <label class="label">Tech Rec'd (Tech)</label>
-                                    <div class="control">
-                                        <input class="input" type="text" formControlName="techReceivedTechCredit" />
+                                    <div class="field">
+                                        <label class="label">Tech Rec'd (Cash)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="techReceivedCashCredit" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="field is-horizontal">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Cash Sent (Tech)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="cashSentTechCredit" />
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Cash Rec'd (Tech)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="cashReceivedTechCredit" />
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Tech Sent (Tech)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="techSentTechCredit" />
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Tech Rec'd (Tech)</label>
+                                        <div class="control">
+                                            <input class="input" type="text" formControlName="techReceivedTechCredit" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
                     </fieldset>
                 </form>
             </div>
         </section>
         <footer class="modal-card-foot">
-            <button class="button is-success" (click)="save()">Save</button>
-            <button class="button">Cancel</button>
+            <button *ngIf="account !== undefined; else createButton" class="button is-success" (click)="save()">Save</button>
+            <ng-template #createButton><button class="button is-success" (click)="create()">Create</button></ng-template>
+            <button class="button" (click)="close()">Cancel</button>
         </footer>
     </div>
 </div>

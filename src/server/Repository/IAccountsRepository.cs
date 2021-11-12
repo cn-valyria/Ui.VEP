@@ -8,8 +8,12 @@ namespace Repository
     {
         Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync();
 
+        Task<AccountDetail> CreateAccountAsync(NewAccountRequest request);
+
         Task UpdateAccountAsync(AccountToUpdate account);
 
         Task RemoveAccountAsync(int accountId);
+
+        Task<ProspectAccount> FindProspectAccountAsync(int nationId);
     }
 }

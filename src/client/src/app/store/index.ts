@@ -3,6 +3,17 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { Account } from "../models/account";
 import { AccountService } from "../services/account.service";
 
+interface Store {
+    accounts: BehaviorSubject<Account[]>
+}
+
+interface ActionSet {
+    loadAllAccounts: (payload: any) => void;
+    createAccount: (payload: any) => void;
+    updateAccount: (payload: any) => void;
+    deleteAccount: (payload: any) => void;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -23,6 +34,7 @@ export class VepAdminStore {
 
         this.actions = {
             loadAllAccounts: () => this.loadAllAccounts(),
+            createAccount: (nationId: number) => this.createAccount(nationId),
             updateAccount: (account: Account) => this.updateAccount(account),
             deleteAccount: (accountId: number) => this.deleteAccount(accountId)
         }
@@ -45,6 +57,13 @@ export class VepAdminStore {
             this._accounts = [...data];
             this.store.accounts.next([...this._accounts]);
         });
+    }
+
+    private createAccount(nationId: number): void {
+        this.accountService.createAccount(nationId).then(createdAccount => {
+            this._accounts.push(createdAccount);
+            this.store.accounts.next([...this._accounts]);
+        })
     }
 
     private updateAccount(account: Account): void {
@@ -75,14 +94,4 @@ export class VepAdminStore {
             this.store.accounts.next(this._accounts);
         });
     }
-}
-
-interface Store {
-    accounts: BehaviorSubject<Account[]>
-}
-
-interface ActionSet {
-    loadAllAccounts: (payload: any) => void;
-    updateAccount: (payload: any) => void;
-    deleteAccount: (payload: any) => void;
 }

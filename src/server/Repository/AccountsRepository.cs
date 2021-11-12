@@ -11,12 +11,8 @@ namespace Repository
     public class AccountsRepository : IAccountsRepository
     {
         private readonly string _connectionString;
-
-        public AccountsRepository(string connectionString) => _connectionString = connectionString;
-
-        public async Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync()
-        {
-            const string query = @"
+        
+        private const string AccountDetailQuery = @"
 select 	account.id as Id,
         nation.id as NationId,
         nation.nation_name as NationName,
@@ -76,10 +72,71 @@ left join (
 	select receiving_nation_id as nation_id, sum(money) as money, sum(technology) as technology
     from cybernations_db.aid
     group by receiving_nation_id
-) recd_aid on nation.id = recd_aid.nation_id;";
+) recd_aid on nation.id = recd_aid.nation_id";
+
+        public AccountsRepository(string connectionString) => _connectionString = connectionString;
+
+        public async Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync()
+        {
+            using var sqlConnection = new MySqlConnection(_connectionString);
+            return await sqlConnection.QueryAsync<AccountDetail>(AccountDetailQuery);
+        }
+
+        public async Task<AccountDetail> CreateAccountAsync(NewAccountRequest request)
+        {
+            const string getDetailedProspectQuery = @"
+select	id as NationId,
+		nation_name as NationName,
+        ruler_name as RulerName,
+        strength as NationStrength,
+        technology as Technology
+from cybernations_db.nation
+where nation.id = @nation_id";
 
             using var sqlConnection = new MySqlConnection(_connectionString);
-            return await sqlConnection.QueryAsync<AccountDetail>(query);
+            var detailedProspectAccount = await sqlConnection.QueryFirstOrDefaultAsync<DetailedProspectAccount>(
+                getDetailedProspectQuery,
+                new { nation_id = request.NationId });
+
+            if (detailedProspectAccount is null)
+                throw new NotFoundException($"Unable to find a nation to create an account for by Nation ID {request.NationId}.");
+
+            const string createAccountQuery = @"
+insert into account (
+	nation_id,
+    discord,
+    discord_id,
+    psw,
+    va,
+    fm,
+    fac,
+    dra
+)
+values (@nation_id, '', 0, @psw, @va, 0, 0, 0)";
+            await sqlConnection.ExecuteAsync(createAccountQuery, new
+            {
+                nation_id = detailedProspectAccount.NationId,
+                psw = GenerateUniqueCode(),
+                va = PredictRole(detailedProspectAccount.NationStrength, detailedProspectAccount.Technology)
+            });
+
+            return await sqlConnection.QueryFirstAsync<AccountDetail>(
+                AccountDetailQuery + "\nwhere account.nation_id = @nation_id",
+                new { nation_id = request.NationId });
+
+            string GenerateUniqueCode()
+            {
+                var random = new Random();
+                var code = random.Next(0, 99999);
+                return code.ToString("D5");
+            }
+
+            string PredictRole(decimal nationStrength, decimal techLevel) => techLevel switch
+            {
+                var tech when tech < 500 => "S",
+                var tech when nationStrength < 50000 => "S",
+                _ => "B"
+            };
         }
 
         public async Task UpdateAccountAsync(AccountToUpdate account)
@@ -147,6 +204,33 @@ where id = @id";
             await sqlConnection.ExecuteAsync(
                 "delete from account where id = @id",
                 new { id = accountId });
+        }
+
+        public async Task<ProspectAccount> FindProspectAccountAsync(int nationId)
+        {
+            using var sqlConnection = new MySqlConnection(_connectionString);
+            const string query = @"
+select	nation.id as NationId,
+		nation.nation_name as NationName,
+        nation.ruler_name as RulerName,
+        (account.id is not null) as AccountAlreadyExists
+from cybernations_db.nation nation
+left join vep_db.account account on nation.id = account.nation_id
+where nation.id = @nation_id";
+
+            var prospectSearchResults = await sqlConnection.QueryFirstOrDefaultAsync(query, new { nation_id = nationId });
+
+            if (prospectSearchResults is null)
+                return null;
+            if (Convert.ToBoolean(prospectSearchResults.AccountAlreadyExists))
+                throw new AlreadyExistsException($"An account for {prospectSearchResults.NationName} already exists.");
+
+            return new ProspectAccount
+            {
+                NationId = prospectSearchResults.NationId,
+                NationName = prospectSearchResults.NationName,
+                RulerName = prospectSearchResults.RulerName
+            };
         }
 
         private async Task<bool> AccountExists(int accountId)
