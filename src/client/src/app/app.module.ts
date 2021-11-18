@@ -12,13 +12,15 @@ import { VepAdminStore } from './store';
 import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { TransactionsComponent } from './admin/transactions/transactions.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminComponent,
     AccountsComponent,
-    AccountEditDialog
+    AccountEditDialog,
+    TransactionsComponent
   ],
   imports: [
     BrowserModule,
