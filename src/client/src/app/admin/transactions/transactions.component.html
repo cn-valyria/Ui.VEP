@@ -6,6 +6,64 @@
 </div>
 <div class="container">
     <div class="section">
+        <div class="columns">
+            <div class="column">
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                        <div class="field">
+                            <label class="label">Sent By</label>
+                            <div class="control">
+                                <input class="input" type="search" placeholder="Nation or Ruler name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <p class="is-size-6" style="padding: 0 12px">Nations</p>
+                            <span class="dropdown-item">lilweirdward of Land of Too Much Fun</span>
+                            <span class="dropdown-item">Lord Draculea of Transylvania</span>
+                            <hr class="dropdown-divider" />
+                            <p class="is-size-6" style="padding: 0 12px">Alliances</p>
+                            <span class="dropdown-item">Christian Coalition of Countries</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                        <div class="field">
+                            <label class="label">Received By</label>
+                            <div class="control">
+                                <input class="input" type="search" placeholder="Nation or Ruler name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <span class="dropdown-item">lilweirdward of Land of Too Much Fun</span>
+                            <span class="dropdown-item">Lord Draculea of Transylvania</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Since</label>
+                    <div class="control">
+                        <input #aidSinceCalendar class="input" type="date" />
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">Until</label>
+                    <div class="control">
+                        <input #aidUntilCalendar class="input" type="date" />
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="tabs is-boxed">
             <ul>
                 <li class="is-active">
@@ -19,40 +77,6 @@
                     </a>
                 </li>
             </ul>
-        </div>
-        <div>
-            <div class="dropdown">
-                <div class="dropdown-trigger">
-                    <div class="field">
-                        <label class="label">Sent By</label>
-                        <div class="control is-expanded">
-                            <input class="input" type="search" placeholder="Nation or Ruler name" />
-                        </div>
-                    </div>
-                </div>
-                <div class="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
-                        <span class="dropdown-item">lilweirdward of Land of Too Much Fun</span>
-                        <span class="dropdown-item">Lord Draculea of Transylvania</span>
-                    </div>
-                </div>
-            </div>
-            <div class="dropdown">
-                <div class="dropdown-trigger">
-                    <div class="field">
-                        <label class="label">Received By</label>
-                        <div class="control is-expanded">
-                            <input class="input" type="search" placeholder="Nation or Ruler name" />
-                        </div>
-                    </div>
-                </div>
-                <div class="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
-                        <span class="dropdown-item">lilweirdward of Land of Too Much Fun</span>
-                        <span class="dropdown-item">Lord Draculea of Transylvania</span>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="table-container">
             <table class="table">
@@ -81,18 +105,37 @@
                 <tbody></tbody>
             </table>
         </div>
-        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-            <a class="pagination-previous">Previous</a>
-            <a class="pagination-next">Next</a>
-            <ul class="pagination-list">
-                <li><a class="pagination-link" aria-label="Goto page 1">1</a></li>
-                <li><span class="pagination-link">&hellip;</span></li>
-                <li><a class="pagination-link" aria-label="Goto page 5">5</a></li>
-                <li><a class="pagination-link is-current" aria-label="Goto page 6">6</a></li>
-                <li><a class="pagination-link" aria-label="Goto page 7">7</a></li>
-                <li><span class="pagination-link">&hellip;</span></li>
-                <li><a class="pagination-link" aria-label="Goto page 9">9</a></li>
-            </ul>
-        </nav>
+        <div class="columns">
+            <div class="column is-four-fifths">
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous">Previous</a>
+                    <a class="pagination-next">Next</a>
+                    <ul class="pagination-list">
+                        <li><a class="pagination-link" aria-label="Goto page 1">1</a></li>
+                        <li><span class="pagination-link">&hellip;</span></li>
+                        <li><a class="pagination-link" aria-label="Goto page 5">5</a></li>
+                        <li><a class="pagination-link is-current" aria-label="Goto page 6">6</a></li>
+                        <li><a class="pagination-link" aria-label="Goto page 7">7</a></li>
+                        <li><span class="pagination-link">&hellip;</span></li>
+                        <li><a class="pagination-link" aria-label="Goto page 9">9</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="column">
+                <div class="dropdown is-active">
+                    <div class="dropdown-trigger">
+                        <button class="button">Results Per Page</button>
+                    </div>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a class="dropdown-item">25</a>
+                            <a class="dropdown-item is-active">100</a>
+                            <a class="dropdown-item">500</a>
+                            <a class="dropdown-item">1000</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
