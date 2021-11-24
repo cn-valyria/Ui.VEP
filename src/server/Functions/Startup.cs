@@ -11,7 +11,9 @@ namespace Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddVepDbRepositories(builder.GetContext().Configuration);
+            builder.Services
+                .AddVepDbRepositories(builder.GetContext().Configuration)
+                .AddAutoMapper(typeof(Startup));
         }
     }
 
@@ -22,7 +24,8 @@ namespace Functions
             var vepDbConnectionString = configuration.GetConnectionString("VepDb");
 
             return services
-                .AddScoped<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString));
+                .AddScoped<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString))
+                .AddScoped<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString));
         }
     }
 }

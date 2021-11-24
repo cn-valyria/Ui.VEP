@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
-using MySqlConnector;
+using MySql.Data.MySqlClient;
 using Repository.DTO;
 using Repository.Infrastructure;
 
