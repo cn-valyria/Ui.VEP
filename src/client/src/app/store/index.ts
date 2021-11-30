@@ -1,10 +1,13 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Account } from "../models/account";
+import { Transaction } from "../models/transaction";
 import { AccountService } from "../services/account.service";
+import { TransactionFilters, TransactionsService } from "../services/transactions.service";
 
 interface Store {
-    accounts: BehaviorSubject<Account[]>
+    accounts: BehaviorSubject<Account[]>,
+    transactions: BehaviorSubject<Transaction[]>
 }
 
 interface ActionSet {
@@ -12,6 +15,7 @@ interface ActionSet {
     createAccount: (payload: any) => void;
     updateAccount: (payload: any) => void;
     deleteAccount: (payload: any) => void;
+    searchTransactions: (payload: any) => void;
 }
 
 @Injectable({
@@ -21,28 +25,40 @@ export class VepAdminStore {
     
     // Internal properties
     private _accounts: Account[] = [];
+    private _transactions: Transaction[] = [];
     private store: Store;
     private actions: ActionSet;
     
     // Constructor
     constructor(
-        private accountService: AccountService
+        private accountService: AccountService,
+        private transactionsService: TransactionsService
     ) {
         this.store = {
-            accounts: new BehaviorSubject<Account[]>([])
+            accounts: new BehaviorSubject<Account[]>([]),
+            transactions: new BehaviorSubject<Transaction[]>([])
         };
 
         this.actions = {
             loadAllAccounts: () => this.loadAllAccounts(),
             createAccount: (nationId: number) => this.createAccount(nationId),
             updateAccount: (account: Account) => this.updateAccount(account),
-            deleteAccount: (accountId: number) => this.deleteAccount(accountId)
+            deleteAccount: (accountId: number) => this.deleteAccount(accountId),
+            searchTransactions: (payload: {
+                filter: TransactionFilters | undefined,
+                limit: number | undefined,
+                offset: number | undefined
+            }) => this.searchTransactions(payload.filter, payload.limit, payload.offset)
         }
     }
 
     // Getters
     get accounts(): Observable<Account[]> {
         return this.store.accounts.asObservable();
+    }
+
+    get transactions(): Observable<Transaction[]> {
+        return this.store.transactions.asObservable();
     }
 
     // Action dispatcher
@@ -92,6 +108,17 @@ export class VepAdminStore {
             accounts.splice(i, 1);
             this._accounts = accounts;
             this.store.accounts.next(this._accounts);
+        });
+    }
+
+    private searchTransactions(
+        filter: TransactionFilters | undefined = undefined,
+        limit: number | undefined = undefined,
+        offset: number | undefined = undefined
+    ): void {
+        this.transactionsService.searchTransactions(filter, limit, offset).then(data => {
+            this._transactions = [...data];
+            this.store.transactions.next([...this._transactions]);
         });
     }
 }

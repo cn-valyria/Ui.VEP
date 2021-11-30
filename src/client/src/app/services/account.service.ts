@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Account } from '../models/account';
-import { Prospect } from '../models/prospect';
+import { NationSimplified } from '../models/nationSimplified';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +32,9 @@ export class AccountService {
     return this.http.delete(`${this.apiUrl}/accounts/${accountId}`).toPromise();
   }
 
-  findProspect(nationId: number): Promise<Prospect> {
+  findProspect(nationId: number): Promise<NationSimplified> {
     return this.http
-      .get<Prospect>(`${this.apiUrl}/accounts/prospect?nationId=${nationId}`)
+      .get<NationSimplified>(`${this.apiUrl}/accounts/prospect?nationId=${nationId}`)
       .toPromise();
   }
 }

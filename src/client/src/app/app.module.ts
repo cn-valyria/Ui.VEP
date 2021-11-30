@@ -8,6 +8,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AccountsComponent } from './admin/accounts/accounts.component';
 import { AccountService } from './services/account.service';
+import { TransactionsService } from './services/transactions.service';
 import { VepAdminStore } from './store';
 import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +30,7 @@ import { TransactionsComponent } from './admin/transactions/transactions.compone
     NoopAnimationsModule,
     ReactiveFormsModule
   ],
-  providers: [AccountService, VepAdminStore],
+  providers: [AccountService, TransactionsService, VepAdminStore],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

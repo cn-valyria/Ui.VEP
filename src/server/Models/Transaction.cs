@@ -15,7 +15,6 @@ namespace Models
         public string Reason { get; set; }
         public DateTime StartsOn { get; set; }
         public TransactionCode Code { get; set; }
-        public string Lu { get; set; }
         public int Classification { get; set; }
         public int Rate { get; set; }
         public int CashMovedTechCredit { get; set; }
