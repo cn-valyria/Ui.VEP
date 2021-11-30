@@ -20,7 +20,7 @@ export class TransactionsService {
     filter: TransactionFilters | undefined = undefined,
     limit: number | undefined = undefined,
     offset: number | undefined = undefined
-  ): Promise<Transaction[]> {
+  ): Promise<TransactionSearchResponse> {
     let params = new URLSearchParams();
     if (filter) {
       if (filter.sentBy) params.append("sentBy", filter.sentBy);
@@ -33,7 +33,6 @@ export class TransactionsService {
 
     return this.http
       .get<TransactionSearchResponse>(`${this.apiUrl}/transactions${params.toString().length > 0 ? "?" + params.toString() : ""}`)
-      .pipe(map(response => response.results))
       .toPromise();
   }
 }

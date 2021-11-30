@@ -1,3 +1,4 @@
+import { AidStatus } from "./enums";
 import { NationSimplified } from "./nationSimplified";
 
 export class Transaction {
@@ -5,7 +6,7 @@ export class Transaction {
     aidId: number | undefined;
     sentBy: NationSimplified | undefined;
     receivedBy: NationSimplified | undefined;
-    status: number;
+    status: AidStatus;
     money: number;
     technology: number;
     soldiers: number;
@@ -24,7 +25,7 @@ export class Transaction {
         aidId: number | undefined = undefined,
         sentBy: NationSimplified | undefined = undefined,
         receivedBy: NationSimplified | undefined = undefined,
-        status: number = 0,
+        status: AidStatus = AidStatus.Expired,
         money: number = 0,
         technology: number = 0,
         soldiers: number = 0,
