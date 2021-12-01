@@ -11,7 +11,7 @@
                 <div class="field">
                     <label class="label">Sent By</label>
                     <div class="control">
-                        <input class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
+                        <input #sentBy class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
                     </div>
                 </div>
                 <!-- <div class="dropdown">
@@ -39,7 +39,7 @@
                 <div class="field">
                     <label class="label">Received By</label>
                     <div class="control">
-                        <input class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
+                        <input #receivedBy class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
                     </div>
                 </div>
             </div>
@@ -212,12 +212,6 @@
                                 {{ totalPages }}
                             </a>
                         </li>
-                        <!-- <li><span class="pagination-link">&hellip;</span></li>
-                        <li><a class="pagination-link">5</a></li>
-                        <li><a class="pagination-link is-current">6</a></li>
-                        <li><a class="pagination-link">7</a></li>
-                        <li><span class="pagination-link">&hellip;</span></li>
-                        <li><a class="pagination-link">9</a></li> -->
                     </ul>
                 </nav>
             </div>
