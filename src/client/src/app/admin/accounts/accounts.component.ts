@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Account } from 'src/app/models/account';
-import { VepAdminStore } from 'src/app/store';
+import { AccountStore } from 'src/app/stores/accountStore';
 
 @Component({
   selector: 'app-accounts',
@@ -17,7 +17,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   accountBeingEdited: Account | undefined;
   accountEditorIsVisible: boolean = false;
 
-  constructor(private store$: VepAdminStore) {
+  constructor(private store$: AccountStore) {
     this.accounts = [];
   }
 

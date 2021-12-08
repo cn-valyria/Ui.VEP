@@ -62,19 +62,19 @@
         </div>
         <div class="tabs is-boxed">
             <ul>
-                <li class="is-active">
+                <li [class.is-active]="currentTab === transactionType.AidBased">
                     <a>
-                        <span>Aid-Based</span>
+                        <span (click)="switchTab(transactionType.AidBased)">Aid-Based</span>
                     </a>
                 </li>
-                <li>
+                <li [class.is-active]="currentTab === transactionType.Manual">
                     <a>
-                        <span>Manual</span>
+                        <span (click)="switchTab(transactionType.Manual)">Manual</span>
                     </a>
                 </li>
             </ul>
         </div>
-        <div class="table-container">
+        <div *ngIf="currentTab === transactionType.AidBased" class="table-container">
             <table class="table">
                 <thead>
                     <tr>
@@ -99,7 +99,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let transaction of currentVisibleTransactions;">
+                    <tr *ngFor="let transaction of aidBasedTransactions;">
                         <td>
                             <div class="buttons are-small">
                                 <button class="button is-info">Edit</button>
@@ -115,8 +115,48 @@
                         <td>{{ transaction.aidId || "" }}</td>
                         <td>{{ transaction.startsOn }}</td>
                         <td>FIX THIS</td>
-                        <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || ""
-                            }}</td>
+                        <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
+                        <td>{{ transaction.classification }}</td>
+                        <td>{{ transaction.rate }}</td>
+                        <td>{{ transaction.cashMovedTechCredit }}</td>
+                        <td>{{ transaction.cashMovedCashCredit }}</td>
+                        <td>{{ transaction.techMovedCashCredit }}</td>
+                        <td>{{ transaction.techMovedTechCredit }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="currentTab === transactionType.Manual" class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>Ruler Name</th>
+                        <th>Nation Name</th>
+                        <th>Adjustment Type</th>
+                        <th>Reason</th>
+                        <th>Lu</th>
+                        <th>Cc</th>
+                        <th>Rate</th>
+                        <th>CT</th>
+                        <th>CC</th>
+                        <th>TC</th>
+                        <th>TT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let transaction of manualTransactions;">
+                        <td>
+                            <div class="buttons are-small">
+                                <button class="button is-info">Edit</button>
+                                <button class="button is-danger">Delete</button>
+                            </div>
+                        </td>
+                        <td>{{ transaction.sentBy?.rulerName || transaction.receivedBy?.rulerName || "" }}</td>
+                        <td>{{ transaction.sentBy?.nationName || transaction.receivedBy?.nationName || "" }}</td>
+                        <td>{{ transaction.sentBy !== undefined ? "Credit" : transaction.receivedBy !== undefined ? "Debt" : "BROKEN" }}</td>
+                        <td>{{ transaction.reason }}</td>
+                        <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
                         <td>{{ transaction.classification }}</td>
                         <td>{{ transaction.rate }}</td>
                         <td>{{ transaction.cashMovedTechCredit }}</td>

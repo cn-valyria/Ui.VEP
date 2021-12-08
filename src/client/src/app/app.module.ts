@@ -9,11 +9,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AccountsComponent } from './admin/accounts/accounts.component';
 import { AccountService } from './services/account.service';
 import { TransactionsService } from './services/transactions.service';
-import { VepAdminStore } from './store';
+import { AccountStore } from './stores/accountStore';
 import { AccountEditDialog } from './admin/accounts/account-edit-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TransactionsComponent } from './admin/transactions/transactions.component';
+import { TransactionStore } from './stores/transactionStore';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { TransactionsComponent } from './admin/transactions/transactions.compone
     NoopAnimationsModule,
     ReactiveFormsModule
   ],
-  providers: [AccountService, TransactionsService, VepAdminStore],
+  providers: [AccountService, TransactionsService, AccountStore, TransactionStore],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -5,7 +5,7 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { Account } from "src/app/models/account";
 import { AccountService } from "src/app/services/account.service";
-import { VepAdminStore } from "src/app/store";
+import { AccountStore } from "src/app/stores/accountStore";
 
 @Component({
     selector: 'account-editor-dialog',
@@ -120,7 +120,7 @@ export class AccountEditDialog implements OnInit, OnDestroy {
         previousListOrder: new FormControl(0)
     });
 
-    constructor(private store$: VepAdminStore, private accountService$: AccountService) { }
+    constructor(private store$: AccountStore, private accountService$: AccountService) { }
 
     ngOnInit(): void {
         this.accountForm.get("nationId")

@@ -2,10 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import bulmaCalendar from 'bulma-calendar';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
-import { AidStatus } from 'src/app/models/enums';
+import { AidStatus, TransactionType } from 'src/app/models/enums';
 import { Transaction } from 'src/app/models/transaction';
 import { TransactionFilters } from 'src/app/services/transactions.service';
-import { VepAdminStore } from 'src/app/store';
+import { AccountStore } from 'src/app/stores/accountStore';
+import { TransactionStore } from 'src/app/stores/transactionStore';
 
 @Component({
   selector: 'app-transactions',
@@ -21,34 +22,45 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("sentBy") sentBy: ElementRef<HTMLInputElement> | undefined;
   @ViewChild("receivedBy") receivedBy: ElementRef<HTMLInputElement> | undefined;
 
-  currentVisibleTransactions: Transaction[];
+  aidBasedTransactions: Transaction[] = [];
+  aidBasedTotalCount: number = 0;
+  manualTransactions: Transaction[] = [];
+  manualTotalCount: number = 0;
+  
+  get transactionType(): typeof TransactionType {
+    return TransactionType;
+  }
+  get aidStatusNames(): typeof AidStatus {
+    return AidStatus;
+  }
+  get totalPages(): number {
+    const totalDataCount = this.currentTab === TransactionType.AidBased ? this.aidBasedTotalCount : this.manualTotalCount;
+    return Math.ceil(totalDataCount / this.limitOptions[this.selectedLimit]);
+  }
 
-  aidStatusNames = AidStatus;
   limitDropdownVisible = false;
   limitOptions = [25, 100, 500, 1000];
   selectedLimit = 0;
+  currentTab: TransactionType = TransactionType.AidBased;
   currentPage = 1;
-  totalPages = 1;
   filterOptions: TransactionFilters | undefined;
 
-  constructor(private store$: VepAdminStore) {
-    this.currentVisibleTransactions = [];
-  }
+  constructor(private store$: TransactionStore) { }
 
   ngOnInit(): void {
-    this.store$.transactions
-      .pipe(
-        takeUntil(this.ngUnsubscribe)
-      )
-      .subscribe(transactions => {
-        this.currentVisibleTransactions = transactions;
-      });
-    
-    this.store$.transactionsSearchCount
+    this.store$.aidBasedTransactions
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(totalCount => {
-        this.totalPages = Math.ceil(totalCount / this.limitOptions[this.selectedLimit]);
+      .subscribe(collection => {
+        this.aidBasedTransactions = collection.data ?? [];
+        this.aidBasedTotalCount = collection.totalCount ?? 0;
       });
+
+    this.store$.manualTransactions
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(collection => {
+        this.manualTransactions = collection.data ?? [];
+        this.manualTotalCount = collection.totalCount ?? 0;
+      })
 
     this.searchTransactions();
   }
@@ -124,6 +136,10 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  switchTab(tab: TransactionType) {
+    this.currentTab = tab;
+  }
+
   limitDropdownSelectChanged(index: number) {
     this.selectedLimit = index;
     this.searchTransactions();
@@ -135,7 +151,11 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchTransactions();
   }
 
-  updateFilters(action: (options: TransactionFilters) => void) {
+  private getTotalPages(totalDataCount: number): number {
+    return Math.ceil(totalDataCount / this.limitOptions[this.selectedLimit])
+  }
+
+  private updateFilters(action: (options: TransactionFilters) => void) {
     // Sanity check that the filters aren't undefined when we use this method
     if (this.filterOptions === undefined) this.filterOptions = new TransactionFilters();
 
@@ -153,12 +173,15 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  searchTransactions() {
-    this.store$.dispatch("searchTransactions", {
+  private searchTransactions() {
+    const payload = {
       filter: this.filterOptions,
       limit: this.limitOptions[this.selectedLimit],
       offset: this.limitOptions[this.selectedLimit] * (this.currentPage - 1)
-    });
+    };
+
+    this.store$.dispatch("getAidBasedTransactions", payload);
+    this.store$.dispatch("getManualTransactions", payload);
   }
 
 }

@@ -13,12 +13,17 @@ namespace Repository
 
         public TransactionsRepository(string connectionString) => _connectionString = connectionString;
 
-        public async Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> GetTransactionDetails(TransactionFilters filters, int limit, int offset)
+        public async Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> SearchTransactions(
+            TransactionType transactionType,
+            TransactionFilters filters,
+            int limit,
+            int offset)
         {
             using var sqlConnection = new MySqlConnection(_connectionString);
 
             await sqlConnection.ExecuteAsync("search_transactions", new 
             {
+                _type = transactionType,
                 _sent_by = filters.SentBy,
                 _received_by = filters.ReceivedBy,
                 _sent_since = filters.SentSince,

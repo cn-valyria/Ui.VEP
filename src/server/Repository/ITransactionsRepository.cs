@@ -7,6 +7,10 @@ namespace Repository
 {
     public interface ITransactionsRepository
     {
-        Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> GetTransactionDetails(TransactionFilters filters, int limit, int offset);
+        Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> SearchTransactions(
+            TransactionType transactionType,
+            TransactionFilters filters,
+            int limit,
+            int offset);
     }
 }

@@ -1,3 +1,16 @@
+/*
+ * UI-related enums
+ */
+
+export enum TransactionType {
+    AidBased,
+    Manual
+}
+
+/*
+ * Data-related enums
+ */
+
 export enum AidStatus {
     Pending = 1,
     Approved,
