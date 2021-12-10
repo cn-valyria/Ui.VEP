@@ -2,11 +2,12 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import bulmaCalendar from 'bulma-calendar';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
-import { AidStatus, TransactionType } from 'src/app/models/enums';
-import { Transaction } from 'src/app/models/transaction';
+import { AdjustmentType, AidStatus, TransactionType } from 'src/app/models/enums';
+import { AidBasedTransaction } from 'src/app/models/aidBasedTransaction';
 import { TransactionFilters } from 'src/app/services/transactions.service';
 import { AccountStore } from 'src/app/stores/accountStore';
 import { TransactionStore } from 'src/app/stores/transactionStore';
+import { ManualTransaction } from 'src/app/models/manualTransaction';
 
 @Component({
   selector: 'app-transactions',
@@ -22,11 +23,14 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("sentBy") sentBy: ElementRef<HTMLInputElement> | undefined;
   @ViewChild("receivedBy") receivedBy: ElementRef<HTMLInputElement> | undefined;
 
-  aidBasedTransactions: Transaction[] = [];
+  aidBasedTransactions: AidBasedTransaction[] = [];
   aidBasedTotalCount: number = 0;
-  manualTransactions: Transaction[] = [];
+  manualTransactions: ManualTransaction[] = [];
   manualTotalCount: number = 0;
   
+  get adjustmentTypeNames(): typeof AdjustmentType {
+    return AdjustmentType;
+  }
   get transactionType(): typeof TransactionType {
     return TransactionType;
   }
@@ -151,10 +155,6 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchTransactions();
   }
 
-  private getTotalPages(totalDataCount: number): number {
-    return Math.ceil(totalDataCount / this.limitOptions[this.selectedLimit])
-  }
-
   private updateFilters(action: (options: TransactionFilters) => void) {
     // Sanity check that the filters aren't undefined when we use this method
     if (this.filterOptions === undefined) this.filterOptions = new TransactionFilters();
@@ -180,8 +180,7 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
       offset: this.limitOptions[this.selectedLimit] * (this.currentPage - 1)
     };
 
-    this.store$.dispatch("getAidBasedTransactions", payload);
-    this.store$.dispatch("getManualTransactions", payload);
+    this.store$.dispatch("getTransactions", payload);
   }
 
 }

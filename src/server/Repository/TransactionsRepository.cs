@@ -13,8 +13,7 @@ namespace Repository
 
         public TransactionsRepository(string connectionString) => _connectionString = connectionString;
 
-        public async Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> SearchTransactions(
-            TransactionType transactionType,
+        public async Task<TransactionSearchResponse> SearchTransactions(
             TransactionFilters filters,
             int limit,
             int offset)
@@ -23,20 +22,28 @@ namespace Repository
 
             await sqlConnection.ExecuteAsync("search_transactions", new 
             {
-                _type = transactionType,
+                _type = TransactionType.All,
                 _sent_by = filters.SentBy,
                 _received_by = filters.ReceivedBy,
                 _sent_since = filters.SentSince,
                 _sent_until = filters.SentUntil
             }, commandType: CommandType.StoredProcedure);
 
-            const string totalCountQuery = "select count(1) from tmpTxnSearchResults";
-            var totalCount = await sqlConnection.QueryFirstAsync<int>(totalCountQuery);
+            var aidBasedCount = await sqlConnection.QueryFirstAsync<int>("select count(1) from tmpTxnSearchResults where AidId is not null");
+            var aidBasedResults = await sqlConnection.QueryAsync<TransactionDetail>(
+                "select * from tmpTxnSearchResults where AidId is not null order by AidId desc limit @offset, @limit",
+                new { offset, limit });
 
-            const string resultsQuery = "select * from tmpTxnSearchResults order by AidId desc limit @offset, @limit";
-            var searchResults = await sqlConnection.QueryAsync<TransactionDetail>(resultsQuery, new { offset, limit });
+            var manualCount = await sqlConnection.QueryFirstAsync<int>("select count(1) from tmpTxnSearchResults where AidId is null");
+            var manualResults = await sqlConnection.QueryAsync<TransactionDetail>(
+                "select * from tmpTxnSearchResults where AidId is null order by coalesce(SentByRulerName, ReceivedByRulerName) limit @offset, @limit",
+                new { offset, limit });
 
-            return (totalCount, searchResults);
+            return new TransactionSearchResponse
+            {
+                AidBasedTransactions = (aidBasedCount, aidBasedResults),
+                ManualTransactions = (manualCount, manualResults)
+            };
         }
     }
 }

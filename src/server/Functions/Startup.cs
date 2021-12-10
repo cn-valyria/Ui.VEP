@@ -24,8 +24,8 @@ namespace Functions
             var vepDbConnectionString = configuration.GetConnectionString("VepDb");
 
             return services
-                .AddScoped<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString))
-                .AddScoped<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString));
+                .AddTransient<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString))
+                .AddTransient<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString));
         }
     }
 }

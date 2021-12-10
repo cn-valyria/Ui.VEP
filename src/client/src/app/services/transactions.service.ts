@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { Transaction } from '../models/transaction';
+import { AidStatus } from '../models/enums';
+import { NationSimplified } from '../models/nationSimplified';
+import { AidBasedTransaction, TransactionCode } from '../models/aidBasedTransaction';
 
 @Injectable({
   providedIn: 'root'
@@ -16,25 +18,14 @@ export class TransactionsService {
     this.apiUrl = "http://localhost:7071/api";
   }
 
-  getAidBasedTransactions(
+  getTransactions(
     filter: TransactionFilters | undefined = undefined,
     limit: number | undefined = undefined,
     offset: number | undefined = undefined
   ): Promise<TransactionSearchResponse> {
     const params = this.toURLSearchParams(filter, limit, offset);
     return this.http
-      .get<TransactionSearchResponse>(`${this.apiUrl}/transactions/aidBased${params.toString().length > 0 ? "?" + params.toString() : ""}`)
-      .toPromise();
-  }
-
-  getManualTransactions(
-    filter: TransactionFilters | undefined,
-    limit: number | undefined,
-    offset: number | undefined
-  ): Promise<TransactionSearchResponse> {
-    const params = this.toURLSearchParams(filter, limit, offset);
-    return this.http
-      .get<TransactionSearchResponse>(`${this.apiUrl}/transactions/manual${params.toString().length > 0 ? "?" + params.toString() : ""}`)
+      .get<TransactionSearchResponse>(`${this.apiUrl}/transactions${params.toString().length > 0 ? "?" + params.toString() : ""}`)
       .toPromise();
   }
 
@@ -64,12 +55,32 @@ export class TransactionFilters {
   sentUntil: Date | undefined;
 }
 
-export class TransactionSearchResponse {
-  totalCount: number;
-  results: Transaction[];
+export interface TransactionSearchResponse {
+  aidBasedTransactions: TransactionCollection;
+  manualTransactions: TransactionCollection;
+}
 
-  constructor(totalCount: number = 0, results: Transaction[] = []) {
-    this.totalCount = totalCount;
-    this.results = results;
-  }
+export interface TransactionCollection {
+  totalCount: number;
+  results: TransactionDetail[];
+}
+
+export interface TransactionDetail {
+  id: number;
+  aidId: number | undefined;
+  sentBy: NationSimplified | undefined;
+  receivedBy: NationSimplified | undefined;
+  status: AidStatus;
+  money: number;
+  technology: number;
+  soldiers: number;
+  reason: string;
+  startsOn: Date;
+  code: TransactionCode | undefined;
+  classification: number;
+  rate: number;
+  cashMovedTechCredit: number;
+  cashMovedCashCredit: number;
+  techMovedCashCredit: number;
+  techMovedTechCredit: number;
 }

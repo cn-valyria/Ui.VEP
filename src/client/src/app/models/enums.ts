@@ -7,6 +7,11 @@ export enum TransactionType {
     Manual
 }
 
+export enum AdjustmentType {
+    Credit,
+    Debt
+}
+
 /*
  * Data-related enums
  */

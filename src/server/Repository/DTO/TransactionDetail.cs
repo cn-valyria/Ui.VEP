@@ -6,11 +6,11 @@ namespace Repository.DTO
     {
         public int Id { get; set; }
         public int? AidId { get; set; }
-        public int SentByNationId { get; set; }
+        public int? SentByNationId { get; set; }
         public string SentByNationName { get; set; }
         public string SentByRulerName { get; set; }
         public string SentByAllianceName { get; set; }
-        public int ReceivedByNationId { get; set; }
+        public int? ReceivedByNationId { get; set; }
         public string ReceivedByNationName { get; set; }
         public string ReceivedByRulerName { get; set; }
         public string ReceivedByAllianceName { get; set; }

@@ -25,12 +25,12 @@ namespace Functions
         public TransactionsEntryPoint(ITransactionsRepository transactionsRepository, IMapper mapper)
             => (_transactionsRepository, _mapper) = (transactionsRepository, mapper);
 
-        [FunctionName(nameof(SearchAidBasedTransactions))]
-        public async Task<IActionResult> SearchAidBasedTransactions(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "transactions/aidBased")] HttpRequest request,
+        [FunctionName(nameof(SearchTransactions))]
+        public async Task<IActionResult> SearchTransactions(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "transactions")] HttpRequest request,
             ILogger log)
         {
-            log.LogInformation($"Beginning execution for {nameof(SearchAidBasedTransactions)} method...");
+            log.LogInformation($"Beginning execution for {nameof(SearchTransactions)} method...");
 
             try
             {
@@ -38,38 +38,13 @@ namespace Functions
                 var limit = ConvertFromQueryString<int>(request.Query["limit"]);
                 var offset = ConvertFromQueryString<int>(request.Query["offset"]);
 
-                var searchResults = await _transactionsRepository.SearchTransactions(TransactionType.AidBased, filters, limit ?? 100, offset ?? 0);
+                var searchResults = await _transactionsRepository.SearchTransactions(filters, limit ?? 100, offset ?? 0);
 
                 return new OkObjectResult(_mapper.Map<TransactionSearchResults>(searchResults));
             }
             catch (Exception e)
             {
-                var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(SearchAidBasedTransactions)}", e);
-                log.LogError(e, wrapperException.Message);
-                return new ExceptionResult(wrapperException, true);
-            }
-        }
-
-        [FunctionName(nameof(SearchManualTransactions))]
-        public async Task<IActionResult> SearchManualTransactions(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "transactions/manual")] HttpRequest request,
-            ILogger log)
-        {
-            log.LogInformation($"Beginning execution for {nameof(SearchManualTransactions)} method...");
-
-            try
-            {
-                var filters = ConvertToFilters(request.Query);
-                var limit = ConvertFromQueryString<int>(request.Query["limit"]);
-                var offset = ConvertFromQueryString<int>(request.Query["offset"]);
-
-                var searchResults = await _transactionsRepository.SearchTransactions(TransactionType.Manual, filters, limit ?? 100, offset ?? 0);
-
-                return new OkObjectResult(_mapper.Map<TransactionSearchResults>(searchResults));
-            }
-            catch (Exception e)
-            {
-                var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(SearchManualTransactions)}", e);
+                var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(SearchTransactions)}", e);
                 log.LogError(e, wrapperException.Message);
                 return new ExceptionResult(wrapperException, true);
             }

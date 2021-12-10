@@ -152,11 +152,11 @@
                                 <button class="button is-danger">Delete</button>
                             </div>
                         </td>
-                        <td>{{ transaction.sentBy?.rulerName || transaction.receivedBy?.rulerName || "" }}</td>
-                        <td>{{ transaction.sentBy?.nationName || transaction.receivedBy?.nationName || "" }}</td>
-                        <td>{{ transaction.sentBy !== undefined ? "Credit" : transaction.receivedBy !== undefined ? "Debt" : "BROKEN" }}</td>
+                        <td>{{ transaction.nation.rulerName }}</td>
+                        <td>{{ transaction.nation.nationName }}</td>
+                        <td>{{ adjustmentTypeNames[transaction.adjustmentType] }}</td>
                         <td>{{ transaction.reason }}</td>
-                        <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
+                        <td>{{ transaction.accountCode }}</td>
                         <td>{{ transaction.classification }}</td>
                         <td>{{ transaction.rate }}</td>
                         <td>{{ transaction.cashMovedTechCredit }}</td>

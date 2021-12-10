@@ -7,8 +7,7 @@ namespace Repository
 {
     public interface ITransactionsRepository
     {
-        Task<(int ResultCount, IEnumerable<TransactionDetail> Results)> SearchTransactions(
-            TransactionType transactionType,
+        Task<TransactionSearchResponse> SearchTransactions(
             TransactionFilters filters,
             int limit,
             int offset);

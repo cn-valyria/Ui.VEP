@@ -1,37 +1,30 @@
 import { AidStatus } from "./enums";
 import { NationSimplified } from "./nationSimplified";
+import { TransactionBase } from "./transactionBase";
 
-export class Transaction {
-    id: number;
-    aidId: number | undefined;
+export class AidBasedTransaction extends TransactionBase {
+    aidId: number;
     sentBy: NationSimplified | undefined;
     receivedBy: NationSimplified | undefined;
     status: AidStatus;
     money: number;
     technology: number;
     soldiers: number;
-    reason: string;
     startsOn: Date;
-    code: TransactionCode | undefined;
-    classification: number;
-    rate: number;
-    cashMovedTechCredit: number;
-    cashMovedCashCredit: number;
-    techMovedCashCredit: number;
-    techMovedTechCredit: number;
+    code: TransactionCode;
 
     constructor(
         id: number = 0,
-        aidId: number | undefined = undefined,
-        sentBy: NationSimplified | undefined = undefined,
-        receivedBy: NationSimplified | undefined = undefined,
+        aidId: number = 0,
+        sentBy: NationSimplified | undefined,
+        receivedBy: NationSimplified | undefined,
         status: AidStatus = AidStatus.Expired,
         money: number = 0,
         technology: number = 0,
         soldiers: number = 0,
         reason: string = "",
         startsOn: Date = new Date(),
-        code: TransactionCode | undefined = undefined,
+        code: TransactionCode = new TransactionCode(),
         classification: number = 0,
         rate: number = 0,
         cashMovedTechCredit: number = 0,
@@ -39,7 +32,7 @@ export class Transaction {
         techMovedCashCredit: number = 0,
         techMovedTechCredit: number = 0
     ) {
-        this.id = id;
+        super(id, reason, classification, rate, cashMovedTechCredit, cashMovedCashCredit, techMovedCashCredit, techMovedTechCredit);
         this.aidId = aidId;
         this.sentBy = sentBy;
         this.receivedBy = receivedBy;
@@ -47,15 +40,8 @@ export class Transaction {
         this.money = money;
         this.technology = technology;
         this.soldiers = soldiers;
-        this.reason = reason;
         this.startsOn = startsOn;
         this.code = code;
-        this.classification = classification;
-        this.rate = rate;
-        this.cashMovedTechCredit = cashMovedTechCredit;
-        this.cashMovedCashCredit = cashMovedCashCredit;
-        this.techMovedCashCredit = techMovedCashCredit;
-        this.techMovedTechCredit = techMovedTechCredit;
     }
 }
 
