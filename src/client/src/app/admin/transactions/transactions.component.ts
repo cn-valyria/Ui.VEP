@@ -49,6 +49,8 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   currentPage = 1;
   filterOptions: TransactionFilters | undefined;
 
+  aidBasedTransactionEditorIsVisible: boolean = false;
+
   constructor(private store$: TransactionStore) { }
 
   ngOnInit(): void {
@@ -138,6 +140,10 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  editAidBasedTransaction() {
+    this.aidBasedTransactionEditorIsVisible = true;
   }
 
   switchTab(tab: TransactionType) {

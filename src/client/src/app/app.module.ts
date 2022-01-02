@@ -15,6 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TransactionsComponent } from './admin/transactions/transactions.component';
 import { TransactionStore } from './stores/transactionStore';
+import { AidBasedTransactionEditDialog } from './admin/transactions/transaction-aidbased-edit.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { TransactionStore } from './stores/transactionStore';
     AdminComponent,
     AccountsComponent,
     AccountEditDialog,
+    AidBasedTransactionEditDialog,
     TransactionsComponent
   ],
   imports: [
