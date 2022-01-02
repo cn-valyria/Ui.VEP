@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 
 @Component({
-    selector: 'transaction-aidbased-editor-dialog',
-    templateUrl: './transaction-aidbased-edit.component.html'
+    selector: 'transaction-editor-dialog',
+    templateUrl: './transaction-editor.component.html'
 })
-export class AidBasedTransactionEditDialog {
+export class TransactionEditorDialog {
 
     private _isVisible: boolean = false;
     @Input()
