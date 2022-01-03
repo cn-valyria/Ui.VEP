@@ -102,7 +102,7 @@
                     <tr *ngFor="let transaction of aidBasedTransactions;">
                         <td>
                             <div class="buttons are-small">
-                                <button class="button is-info" (click)="editAidBasedTransaction()">Edit</button>
+                                <button class="button is-info" (click)="editAidBasedTransaction(transaction.id)">Edit</button>
                             </div>
                         </td>
                         <td>{{ transaction.sentBy?.rulerName || "" }}</td>
@@ -275,4 +275,4 @@
         </div>
     </div>
 </div>
-<transaction-editor-dialog [(isVisible)]="aidBasedTransactionEditorIsVisible"></transaction-editor-dialog>
+<transaction-editor-dialog [(isVisible)]="transactionEditorIsVisible" [(aidBasedTransaction)]="aidBasedTransactionBeingEdited"></transaction-editor-dialog>

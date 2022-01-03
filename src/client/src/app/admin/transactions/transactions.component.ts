@@ -49,7 +49,8 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   currentPage = 1;
   filterOptions: TransactionFilters | undefined;
 
-  aidBasedTransactionEditorIsVisible: boolean = false;
+  transactionEditorIsVisible: boolean = false;
+  aidBasedTransactionBeingEdited: AidBasedTransaction | undefined;
 
   constructor(private store$: TransactionStore) { }
 
@@ -142,8 +143,12 @@ export class TransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  editAidBasedTransaction() {
-    this.aidBasedTransactionEditorIsVisible = true;
+  editAidBasedTransaction(transactionId: number) {
+    const transaction = this.aidBasedTransactions.find(t => t.id === transactionId);
+    if (transaction !== undefined) {
+      this.aidBasedTransactionBeingEdited = transaction;
+      this.transactionEditorIsVisible = true;
+    }
   }
 
   switchTab(tab: TransactionType) {

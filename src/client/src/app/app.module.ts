@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TransactionsComponent } from './admin/transactions/transactions.component';
 import { TransactionStore } from './stores/transactionStore';
 import { TransactionEditorDialog } from './admin/transactions/transaction-editor.component';
+import { EnumToArrayPipe } from './helpers/enumToArrayPipe';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { TransactionEditorDialog } from './admin/transactions/transaction-editor
     AccountsComponent,
     AccountEditDialog,
     TransactionEditorDialog,
-    TransactionsComponent
+    TransactionsComponent,
+    EnumToArrayPipe
   ],
   imports: [
     BrowserModule,
