@@ -51,7 +51,7 @@
             <tr v-for="(account, i) in accounts" :key="i">
               <td>
                 <div class="buttons are-small">
-                  <button class="button is-info">Edit</button>
+                  <button class="button is-info" @click="editAccount(account)">Edit</button>
                   <button class="button is-danger">Delete</button>
                 </div>
               </td>
@@ -92,6 +92,12 @@
         </table>
       </div>
     </div>
+
+    <AdminAccountEditDialog 
+      :account="accountBeingEdited" 
+      :show="editDialogIsVisible"
+      @close="closeAccountEditDialog()" 
+    />
   </div>
 </template>
 
@@ -100,6 +106,10 @@ import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'AccountsPage',
+  data: () => ({
+    editDialogIsVisible: false,
+    accountBeingEdited: undefined
+  }),
   computed: {
     ...mapState({
       accounts: state => state.admin.accounts.accounts
@@ -112,7 +122,15 @@ export default {
   methods: {
     ...mapActions({
       loadAllAccounts: 'admin/accounts/loadAllAccounts'
-    })
+    }),
+    editAccount(account) {
+      this.accountBeingEdited = account;
+      this.editDialogIsVisible = true;
+    },
+    closeAccountEditDialog() {
+      this.accountBeingEdited = undefined;
+      this.editDialogIsVisible = false;
+    }
   }
 }
 </script>
