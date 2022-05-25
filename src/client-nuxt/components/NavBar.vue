@@ -14,7 +14,6 @@
 
     <div class="navbar-menu">
       <div class="navbar-start">
-        <!-- <a class="navbar-item">Home</a> -->
         <NuxtLink to="/" class="navbar-item">Home</NuxtLink>
         <a class="navbar-item">How It Works</a>
       </div>
@@ -23,9 +22,8 @@
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link is-arrowless">Admin Portal</a>
           <div class="navbar-dropdown">
-            <!-- <a class="navbar-item" routerLink="admin">Home</a> -->
             <NuxtLink to="/admin" class="navbar-item">Home</NuxtLink>
-            <a class="navbar-item" routerLink="admin/accounts">Accounts</a>
+            <NuxtLink to="/admin/accounts" class="navbar-item">Accounts</NuxtLink>
             <a class="navbar-item" routerLink="admin/transactions">Transactions</a>
             <a class="navbar-item">Lists</a> 
           </div>
