@@ -43,6 +43,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/toast',
     'nuxt-logger'
   ],
 
@@ -50,6 +51,12 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: 'http://localhost:7071/api/',
+  },
+
+  // Toast module configuration
+  toast: {
+    position: 'bottom-center',
+    duration: '5000'
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

@@ -14,13 +14,18 @@ export const mutations = {
     state.accounts = [];
   },
   [ADD_ACCOUNTS](state, payload) {
-    state.accounts = state.accounts.concat(payload);
+    state.accounts.push(...payload);
   },
   [UPDATE_ACCOUNT](state, payload) {
-    let allAccounts = [...state.accounts];
-    const i = allAccounts.findIndex(a => a.id === payload.id);
+    // let allAccounts = [...state.accounts];
+    const i = state.accounts.findIndex(a => a.id === payload.id);
+    if (i === -1) {
+      this.$log.warn(`No account was found by ID ${payload.id}, so nothing will be updated`);
+      return;
+    }
+
     const updatedAccount = {
-      ...allAccounts[i],
+      ...state.accounts[i],
       role: payload.role,
       uniqueCode: payload.uniqueCode,
       discord: payload.discord,
@@ -29,16 +34,16 @@ export const mutations = {
       hasFederalAidCommission: payload.hasFederalAidCommission,
       hasDisasterReliefAgency: payload.hasDisasterReliefAgency
     };
-    allAccounts = [...allAccounts.splice(0, i), updatedAccount, ...allAccounts.splice(i + 1)];
-    state.accounts = allAccounts;
+    state.accounts[i] = updatedAccount;
   },
   [REMOVE_ACCOUNT](state, payload) {
-    let allAccounts = [...state.accounts];
-    const i = allAccounts.findIndex(a => a.id === payload);
-    const accounts = [...allAccounts];
-    accounts.splice(i, 1);
-    allAccounts = accounts;
-    state.accounts = allAccounts
+    const i = state.accounts.findIndex(a => a.id === payload);
+    if (i === -1) {
+      this.$log.warn(`No account was found by ID ${payload}, so nothing will be removed.`);
+      return;
+    }
+
+    this.accounts.splice(i, 1);
   }
 };
 
@@ -48,5 +53,10 @@ export const actions = {
     this.$log.info(response);
     context.commit(CLEAR_ACCOUNTS);
     context.commit(ADD_ACCOUNTS, response.data);
+  },
+  async updateAccount(context, payload) {
+    const response = await this.$axios.put("accounts", payload);
+    this.$log.debug(response);
+    context.commit(UPDATE_ACCOUNT, payload);
   }
 };
