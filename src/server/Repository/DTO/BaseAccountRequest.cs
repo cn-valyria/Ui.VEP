@@ -1,8 +1,7 @@
 namespace Repository.DTO
 {
-    public class AccountToUpdate
+    public abstract class BaseAccountRequest
     {
-        public int Id { get; set; }
         public char Role { get; set; }
         public string UniqueCode { get; set; }
         public string Discord { get; set; }

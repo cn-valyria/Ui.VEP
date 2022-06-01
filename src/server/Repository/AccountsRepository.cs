@@ -82,25 +82,9 @@ left join (
             return await sqlConnection.QueryAsync<AccountDetail>(AccountDetailQuery);
         }
 
-        public async Task<AccountDetail> CreateAccountAsync(NewAccountRequest request)
+        public async Task<AccountDetail> CreateAccountAsync(AccountCreateRequest request)
         {
-            const string getDetailedProspectQuery = @"
-select	id as NationId,
-		nation_name as NationName,
-        ruler_name as RulerName,
-        strength as NationStrength,
-        technology as Technology
-from cybernations_db.nation
-where nation.id = @nation_id";
-
             using var sqlConnection = new MySqlConnection(_connectionString);
-            var detailedProspectAccount = await sqlConnection.QueryFirstOrDefaultAsync<DetailedProspectAccount>(
-                getDetailedProspectQuery,
-                new { nation_id = request.NationId });
-
-            if (detailedProspectAccount is null)
-                throw new NotFoundException($"Unable to find a nation to create an account for by Nation ID {request.NationId}.");
-
             const string createAccountQuery = @"
 insert into account (
 	nation_id,
@@ -112,34 +96,26 @@ insert into account (
     fac,
     dra
 )
-values (@nation_id, '', 0, @psw, @va, 0, 0, 0)";
+values (@nation_id, @discord, @discord_id, @psw, @va, @fm, @fac, @dra)";
+
             await sqlConnection.ExecuteAsync(createAccountQuery, new
             {
-                nation_id = detailedProspectAccount.NationId,
-                psw = GenerateUniqueCode(),
-                va = PredictRole(detailedProspectAccount.NationStrength, detailedProspectAccount.Technology)
+                nation_id = request.NationId,
+                discord = request.Discord,
+                discord_id = request.DiscordUniqueId,
+                psw = request.UniqueCode,
+                va = request.Role,
+                fm = request.HasForeignMinistry,
+                fac = request.HasFederalAidCommission,
+                dra = request.HasDisasterReliefAgency
             });
 
             return await sqlConnection.QueryFirstAsync<AccountDetail>(
                 AccountDetailQuery + "\nwhere account.nation_id = @nation_id",
                 new { nation_id = request.NationId });
-
-            string GenerateUniqueCode()
-            {
-                var random = new Random();
-                var code = random.Next(0, 99999);
-                return code.ToString("D5");
-            }
-
-            string PredictRole(decimal nationStrength, decimal techLevel) => techLevel switch
-            {
-                var tech when tech < 500 => "S",
-                var tech when nationStrength < 50000 => "S",
-                _ => "B"
-            };
         }
 
-        public async Task UpdateAccountAsync(AccountToUpdate account)
+        public async Task UpdateAccountAsync(AccountUpdateRequest account)
         {
             if (!await AccountExists(account.Id))
                 throw new NotFoundException($"Unable to find an account to update by ID {account.Id}.");

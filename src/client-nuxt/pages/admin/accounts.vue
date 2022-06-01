@@ -8,8 +8,8 @@
     </div>
     <div class="container">
       <div class="section table-container">
-        <button class="button is-success">Create</button>
-        <table class="table is-hoverable is-bordered">
+        <button class="button is-success" @click="createAccount()">Create</button>
+        <table class="table is-hoverable">
           <thead>
             <tr>
               <th>Actions</th>
@@ -123,6 +123,10 @@ export default {
     ...mapActions({
       loadAllAccounts: 'admin/accounts/loadAllAccounts'
     }),
+    createAccount() {
+      this.accountBeingEdited = {};
+      this.editDialogIsVisible = true;
+    },
     editAccount(account) {
       this.accountBeingEdited = account;
       this.editDialogIsVisible = true;

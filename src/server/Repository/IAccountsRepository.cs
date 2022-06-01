@@ -8,9 +8,9 @@ namespace Repository
     {
         Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync();
 
-        Task<AccountDetail> CreateAccountAsync(NewAccountRequest request);
+        Task<AccountDetail> CreateAccountAsync(AccountCreateRequest request);
 
-        Task UpdateAccountAsync(AccountToUpdate account);
+        Task UpdateAccountAsync(AccountUpdateRequest account);
 
         Task RemoveAccountAsync(int accountId);
 

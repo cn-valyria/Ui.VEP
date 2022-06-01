@@ -53,7 +53,7 @@ namespace Functions
 
             try
             {
-                var newAccountRequest = await JsonSerializer.DeserializeAsync<NewAccountRequest>(
+                var newAccountRequest = await JsonSerializer.DeserializeAsync<AccountCreateRequest>(
                     request.Body,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
@@ -88,7 +88,7 @@ namespace Functions
             try
             {
                 var content = await new StreamReader(request.Body).ReadToEndAsync();
-                var accountToUpdate = JsonSerializer.Deserialize<AccountToUpdate>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var accountToUpdate = JsonSerializer.Deserialize<AccountUpdateRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 
                 await _accountsRepository.UpdateAccountAsync(accountToUpdate);
 

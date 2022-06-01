@@ -50,9 +50,14 @@ export const mutations = {
 export const actions = {
   async loadAllAccounts(context) {
     const response = await this.$axios.get("accounts");
-    this.$log.info(response);
+    this.$log.debug(response);
     context.commit(CLEAR_ACCOUNTS);
     context.commit(ADD_ACCOUNTS, response.data);
+  },
+  async createAccount(context, payload) {
+    const response = await this.$axios.post("accounts", payload);
+    this.$log.debug(response);
+    context.commit(ADD_ACCOUNTS, [response.data]);
   },
   async updateAccount(context, payload) {
     const response = await this.$axios.put("accounts", payload);

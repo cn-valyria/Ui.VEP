@@ -1,7 +1,8 @@
 namespace Repository.DTO
 {
-    public class NewAccountRequest
+    public class AccountCreateRequest : BaseAccountRequest
     {
         public int NationId { get; set; }
+        
     }
 }
