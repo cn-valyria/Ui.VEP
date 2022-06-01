@@ -43,7 +43,7 @@ export const mutations = {
       return;
     }
 
-    this.accounts.splice(i, 1);
+    state.accounts.splice(i, 1);
   }
 };
 
@@ -63,5 +63,10 @@ export const actions = {
     const response = await this.$axios.put("accounts", payload);
     this.$log.debug(response);
     context.commit(UPDATE_ACCOUNT, payload);
+  },
+  async deleteAccount(context, payload) {
+    const response = await this.$axios.delete(`accounts/${payload}`);
+    this.$log.debug(response);
+    context.commit(REMOVE_ACCOUNT, payload);
   }
 };

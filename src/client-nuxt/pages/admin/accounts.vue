@@ -52,7 +52,13 @@
               <td>
                 <div class="buttons are-small">
                   <button class="button is-info" @click="editAccount(account)">Edit</button>
-                  <button class="button is-danger">Delete</button>
+                  <button
+                    class="button is-danger"
+                    :class="{ 'is-loading': accountIdBeingDeleted === account.id }"
+                    @click="deleteAccountById(account.id)"
+                  >
+                    Delete
+                  </button>
                 </div>
               </td>
               <td>{{ account.nationId }}</td>
@@ -108,7 +114,8 @@ export default {
   name: 'AccountsPage',
   data: () => ({
     editDialogIsVisible: false,
-    accountBeingEdited: undefined
+    accountBeingEdited: undefined,
+    accountIdBeingDeleted: 0
   }),
   computed: {
     ...mapState({
@@ -121,7 +128,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadAllAccounts: 'admin/accounts/loadAllAccounts'
+      loadAllAccounts: "admin/accounts/loadAllAccounts",
+      deleteAccount: "admin/accounts/deleteAccount"
     }),
     createAccount() {
       this.accountBeingEdited = {};
@@ -130,6 +138,18 @@ export default {
     editAccount(account) {
       this.accountBeingEdited = account;
       this.editDialogIsVisible = true;
+    },
+    async deleteAccountById(accountId) {
+      this.accountIdBeingDeleted = accountId;
+
+      try {
+        await this.deleteAccount(accountId);
+      } catch (e) {
+        this.$log.error(e);
+        this.$toast.error("VEP encountered an error while deleting the account. Please try again, or contact @lilweirdward if the error persists.");
+      }
+
+      this.accountIdBeingDeleted = 0;
     },
     closeAccountEditDialog() {
       this.accountBeingEdited = undefined;
