@@ -21,7 +21,7 @@ select 	account.id as Id,
         account.discord_id as DiscordUniqueId,
         account.psw as UniqueCode,
         account.va as Role,
-		alliance.name as Alliance,
+		alliance.name as AllianceName,
         nation.recent_activity as Activity,
         nation.strength as Strength,
         nation.infrastructure as Infra,
@@ -189,9 +189,11 @@ where id = @id";
 select	nation.id as NationId,
 		nation.nation_name as NationName,
         nation.ruler_name as RulerName,
+        alliance.name as AllianceName,
         (account.id is not null) as AccountAlreadyExists
 from cybernations_db.nation nation
 left join vep_db.account account on nation.id = account.nation_id
+left join cybernations_db.alliance alliance on nation.alliance_id = alliance.id
 where nation.id = @nation_id";
 
             var prospectSearchResults = await sqlConnection.QueryFirstOrDefaultAsync(query, new { nation_id = nationId });
@@ -205,7 +207,8 @@ where nation.id = @nation_id";
             {
                 NationId = prospectSearchResults.NationId,
                 NationName = prospectSearchResults.NationName,
-                RulerName = prospectSearchResults.RulerName
+                RulerName = prospectSearchResults.RulerName,
+                AllianceName = prospectSearchResults.AllianceName
             };
         }
 

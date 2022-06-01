@@ -35,7 +35,6 @@
               <th>sTech</th>
               <th>Credit</th>
               <th>Debt</th>
-              <th>Balance</th>
               <th>ctB</th>
               <th>ctS</th>
               <th>ccB</th>
@@ -68,7 +67,7 @@
               <td>{{ account.discordUniqueId }}</td>
               <td>{{ account.uniqueCode }}</td>
               <td>{{ account.role }}</td>
-              <td>FIX THIS</td>
+              <td>{{ account.allianceName }}</td>
               <td>{{ account.activity }}</td>
               <td>{{ account.strength }}</td>
               <td>{{ account.infra }}</td>
@@ -82,8 +81,7 @@
               <td>{{ account.totalCashSent - account.totalCashReceived }}</td>
               <td>{{ account.totalTechSent - account.totalTechReceived }}</td>
               <td>{{ account.credit }}</td>
-              <td>FIX THIS</td>
-              <td>FIX THIS</td>
+              <td>{{ account.debt }}</td>
               <td>{{ account.cashSentTechCredit }}</td>
               <td>{{ account.cashReceivedTechCredit }}</td>
               <td>{{ account.cashSentCashCredit }}</td>

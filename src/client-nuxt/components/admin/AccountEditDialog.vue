@@ -35,6 +35,12 @@
                 </div>
               </div>
             </div>
+            <div class="field">
+              <div class="label">Alliance Name</div>
+              <div class="control">
+                <input v-model="accountBeingEdited.allianceName" class="input" type="text" />
+              </div>
+            </div>
           </fieldset>
           <fieldset v-if="isInUpdateState || foundProspectAccount">
             <div class="field">
@@ -381,7 +387,8 @@ export default {
         this.accountBeingEdited = { 
           ...this.accountBeingEdited,
           nationName: prospectAccount.nationName,
-          rulerName: prospectAccount.rulerName
+          rulerName: prospectAccount.rulerName,
+          allianceName: prospectAccount.allianceName
         };
       } catch (e) {
         this.$log.error(e);
