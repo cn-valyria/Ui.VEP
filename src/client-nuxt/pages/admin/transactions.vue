@@ -76,7 +76,7 @@
             </li>
           </ul>
         </div>
-        <div class="table-container"> <!-- *ngIf="currentTab === transactionType.AidBased" -->
+        <div class="table-container"> <!-- v-if="currentTab === transactionType.AidBased" -->
           <table class="table">
             <thead>
               <tr>
@@ -109,7 +109,7 @@
                 </td>
                 <td>{{ transaction.sentBy.rulerName || "" }}</td>
                 <td>{{ transaction.receivedBy.rulerName || "" }}</td>
-                <td>{{ toAidStatusDescription(transaction.status) }}</td> <!-- {{ aidStatusNames[transaction.status] }} -->
+                <td>{{ toAidStatusDescription(transaction.status) }}</td>
                 <td>{{ transaction.money }}</td>
                 <td>{{ transaction.technology }}</td>
                 <td>{{ transaction.soldiers }}</td>
@@ -169,91 +169,94 @@
             </tbody>
           </table>
         </div>
-        <!-- <div class="columns">
+        <div class="columns">
           <div class="column is-four-fifths">
             <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-              <a class="pagination-previous">Previous</a>
-              <a class="pagination-next">Next</a>
+              <a class="pagination-previous" @click="changePage(currentPage - 1)">Previous</a>
+              <a class="pagination-next" @click="changePage(currentPage + 1)">Next</a>
               <ul class="pagination-list">
                 <li>
-                  <a class="pagination-link" [class.is-current]="currentPage === 1" (click)="changePage(1)">
+                  <a class="pagination-link" :class="{ 'is-current': currentPage === 1 }" @click="changePage(1)">
                     1
                   </a>
                 </li>
-                <ng-container *ngIf="currentPage <= 3 || totalPages <= 6">
-                  <li *ngIf="totalPages >= 2">
-                    <a class="pagination-link" [class.is-current]="currentPage === 2" (click)="changePage(2)">
-                      2
-                    </a>
-                  </li>
-                  <li *ngIf="totalPages >= 3">
-                    <a class="pagination-link" [class.is-current]="currentPage === 3" (click)="changePage(3)">
-                      3
-                    </a>
-                  </li>
-                  <li *ngIf="totalPages >= 4">
-                    <a class="pagination-link" (click)="changePage(4)">4</a>
-                  </li>
-                  <li *ngIf="totalPages >= 5">
-                    <a class="pagination-link" (click)="changePage(5)">5</a>
-                  </li>
-                  <li *ngIf="totalPages >= 7">
-                    <span class="pagination-link">&hellip;</span>
-                  </li>
-                </ng-container>
-                <ng-container *ngIf="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <li>
-                    <span class="pagination-link">&hellip;</span>
-                  </li>
-                  <li>
-                    <a class="pagination-link" (click)="changePage(currentPage - 1)">
-                      {{ currentPage - 1 }}
-                    </a>
-                  </li>
-                  <li>
-                    <a class="pagination-link is-current">
-                      {{ currentPage }}
-                    </a>
-                  </li>
-                  <li>
-                    <a class="pagination-link" (click)="changePage(currentPage + 1)">
-                      {{ currentPage + 1 }}
-                    </a>
-                  </li>
-                  <li>
-                    <span class="pagination-link">&hellip;</span>
-                  </li>
-                </ng-container>
-                <ng-container *ngIf="totalPages > 6 && totalPages - currentPage <= 2">
-                  <li>
-                    <span class="pagination-link">&hellip;</span>
-                  </li>
-                  <li>
-                    <a class="pagination-link" (click)="changePage(totalPages - 4)">
-                      {{ totalPages - 4 }}
-                    </a>
-                  </li>
-                  <li>
-                    <a class="pagination-link" (click)="changePage(1)">
-                      {{ totalPages - 3 }}
-                    </a>
-                  </li>
-                  <li>
-                    <a class="pagination-link" [class.is-current]="currentPage === totalPages - 2"
-                      (click)="changePage(totalPages - 2)">
-                      {{ totalPages - 2 }}
-                    </a>
-                  </li>
-                  <li>
-                    <a class="pagination-link" [class.is-current]="currentPage === totalPages - 1"
-                      (click)="changePage(totalPages - 1)">
-                      {{ totalPages - 1 }}
-                    </a>
-                  </li>
-                </ng-container>
-                <li *ngIf="totalPages >= 6">
-                  <a class="pagination-link" [class.is-current]="currentPage === totalPages"
-                    (click)="changePage(totalPages)">
+                <li v-if="currentPage <= 3 && totalPages >= 2">
+                  <a class="pagination-link" :class="{ 'is-current': currentPage === 2 }" @click="changePage(2)">
+                    2
+                  </a>
+                </li>
+                <li v-if="currentPage <= 3 && totalPages >= 3">
+                  <a class="pagination-link" :class="{ 'is-current': currentPage === 3 }" @click="changePage(3)">
+                    3
+                  </a>
+                </li>
+                <li v-if="currentPage <= 3 && totalPages >= 4">
+                  <a class="pagination-link" @click="changePage(4)">4</a>
+                </li>
+                <li v-if="currentPage <= 3 && totalPages >= 5">
+                  <a class="pagination-link" @click="changePage(5)">5</a>
+                </li>
+                <li v-if="currentPage <= 3 && totalPages >= 7">
+                  <span class="pagination-link">&hellip;</span>
+                </li>
+                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
+                  <span class="pagination-link">&hellip;</span>
+                </li>
+                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
+                  <a class="pagination-link" @click="changePage(currentPage - 1)">
+                    {{ currentPage - 1 }}
+                  </a>
+                </li>
+                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
+                  <a class="pagination-link is-current">
+                    {{ currentPage }}
+                  </a>
+                </li>
+                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
+                  <a class="pagination-link" @click="changePage(currentPage + 1)">
+                    {{ currentPage + 1 }}
+                  </a>
+                </li>
+                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
+                  <span class="pagination-link">&hellip;</span>
+                </li>
+                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
+                  <span class="pagination-link">&hellip;</span>
+                </li>
+                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
+                  <a class="pagination-link" @click="changePage(totalPages - 4)">
+                    {{ totalPages - 4 }}
+                  </a>
+                </li>
+                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
+                  <a class="pagination-link" @click="changePage(1)">
+                    {{ totalPages - 3 }}
+                  </a>
+                </li>
+                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
+                  <a
+                    class="pagination-link" 
+                    :class="{ 'is-current': currentPage === totalPages } - 2"
+                    @click="changePage(totalPages - 2)"
+                  >
+                    {{ totalPages - 2 }}
+                  </a>
+                </li>
+                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
+                  <a
+                    class="pagination-link"
+                    :class="{ 'is-current': currentPage === totalPages } - 1"
+                    @click="changePage(totalPages - 1)"
+                  >
+                    {{ totalPages - 1 }}
+                  </a>
+                </li>
+                <li v-if="totalPages >= 6">
+                  <a
+                    class="pagination-link"
+                    :class="{ 'is-current': currentPage === totalPages }"
+                    @click="changePage(totalPages)"
+                  >
                     {{ totalPages }}
                   </a>
                 </li>
@@ -261,23 +264,15 @@
             </nav>
           </div>
           <div class="column">
-            <div class="dropdown is-up" [class.is-active]="limitDropdownVisible">
-              <div class="dropdown-trigger">
-                <button class="button" (click)="limitDropdownVisible = !limitDropdownVisible">
-                  Results Per Page
-                </button>
-              </div>
-              <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a *ngFor="let option of limitOptions; index as i;" class="dropdown-item"
-                    [class.is-active]="selectedLimit === i" (click)="limitDropdownSelectChanged(i)">
-                    {{ option }}
-                  </a>
-                </div>
-              </div>
+            <div class="select">
+              <select v-model="limit">
+                <option v-for="option in limitOptions" :key="option">
+                  {{ option }}
+                </option>
+              </select>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -288,6 +283,11 @@ import { mapState, mapActions } from "vuex";
 
 export default {
   name: "TransactionsPage",
+  data: () => ({
+    currentPage: 1,
+    limit: 25,
+    limitOptions: [ 10, 25, 100, 500 ]
+  }),
   computed: {
     ...mapState({
       currentTransactionsPage: state => state.admin.transactions.currentTransactionsPage
@@ -295,18 +295,26 @@ export default {
     transactions() {
       return this.currentTransactionsPage.data;
     },
-    totalDataCount() {
-      return this.currentTransactionsPage.totalCount;
+    totalPages() {
+      return Math.ceil(this.currentTransactionsPage.totalCount / 100);
     }
   },
-  created() {
-    this.reloadCurrentTransactionsPage({});
+  async created() {
+    await this.changePage(1);
     this.$log.info(this.currentTransactionsPage);
   },
   methods: {
     ...mapActions({
       reloadCurrentTransactionsPage: "admin/transactions/reloadCurrentTransactionsPage"
     }),
+    async changePage(newPageNumber) {
+      this.currentPage = newPageNumber;
+      await this.reloadCurrentTransactionsPage({
+        filter: {},
+        limit: this.limit,
+        offset: this.limit * (this.currentPage - 1)
+      });
+    },
     toAidStatusDescription(statusId) {
       switch (statusId) {
         case 1: return "Pending";
