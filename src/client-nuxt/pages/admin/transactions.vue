@@ -101,29 +101,29 @@
               </tr>
             </thead>
             <tbody>
-              <tr> <!-- *ngFor="let transaction of aidBasedTransactions;" -->
+              <tr v-for="(transaction, i) in transactions" :key="i">
                 <td>
                   <div class="buttons are-small">
                     <button class="button is-info">Edit</button>
                   </div>
                 </td>
-                <td>FIX THIS</td> <!-- {{ transaction.sentBy?.rulerName || "" }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.receivedBy?.rulerName || "" }} -->
-                <td>FIX THIS</td> <!-- {{ aidStatusNames[transaction.status] }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.money }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.technology }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.soldiers }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.reason }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.aidId || "" }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.startsOn }} -->
+                <td>{{ transaction.sentBy.rulerName || "" }}</td>
+                <td>{{ transaction.receivedBy.rulerName || "" }}</td>
+                <td>{{ toAidStatusDescription(transaction.status) }}</td> <!-- {{ aidStatusNames[transaction.status] }} -->
+                <td>{{ transaction.money }}</td>
+                <td>{{ transaction.technology }}</td>
+                <td>{{ transaction.soldiers }}</td>
+                <td>{{ transaction.reason }}</td>
+                <td>{{ transaction.aidId || "" }}</td>
+                <td>{{ transaction.startsOn }}</td>
                 <td>FIX THIS</td>
-                <td>FIX THIS</td> <!-- {{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.classification }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.rate }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.cashMovedTechCredit }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.cashMovedCashCredit }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.techMovedCashCredit }} -->
-                <td>FIX THIS</td> <!-- {{ transaction.techMovedTechCredit }} -->
+                <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
+                <td>{{ transaction.classification }}</td>
+                <td>{{ transaction.rate }}</td>
+                <td>{{ transaction.cashMovedTechCredit }}</td>
+                <td>{{ transaction.cashMovedCashCredit }}</td>
+                <td>{{ transaction.techMovedCashCredit }}</td>
+                <td>{{ transaction.techMovedTechCredit }}</td>
               </tr>
             </tbody>
           </table>
@@ -284,7 +284,38 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
-  name: "TransactionsPage"
+  name: "TransactionsPage",
+  computed: {
+    ...mapState({
+      currentTransactionsPage: state => state.admin.transactions.currentTransactionsPage
+    }),
+    transactions() {
+      return this.currentTransactionsPage.data;
+    },
+    totalDataCount() {
+      return this.currentTransactionsPage.totalCount;
+    }
+  },
+  created() {
+    this.reloadCurrentTransactionsPage({});
+    this.$log.info(this.currentTransactionsPage);
+  },
+  methods: {
+    ...mapActions({
+      reloadCurrentTransactionsPage: "admin/transactions/reloadCurrentTransactionsPage"
+    }),
+    toAidStatusDescription(statusId) {
+      switch (statusId) {
+        case 1: return "Pending";
+        case 2: return "Approved";
+        case 3: return "Cancelled";
+        case 4: return "Expired";
+        default: return "Unknown";
+      }
+    }
+  }
 }
 </script>
