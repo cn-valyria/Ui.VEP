@@ -25,13 +25,13 @@ export const mutations = {
 };
 
 export const actions = {
-  async reloadCurrentTransactionsPage(context, { filter, limit, offset }) {
+  async reloadCurrentTransactionsPage(context, { type, filter, limit, offset }) {
     const params = toURLSearchParams(filter, limit, offset);
-    const response = await this.$axios.get(`transactions${params.toString().length > 0 ? "?" + params.toString() : ""}`);
+    const response = await this.$axios.get(`transactions/${type}${params.toString().length > 0 ? "?" + params.toString() : ""}`);
     this.$log.debug(response);
     context.commit(RELOAD_TRANSACTIONS_PAGE, {
-      data: response.data.aidBasedTransactions.results,
-      totalCount: response.data.aidBasedTransactions.totalCount
+      data: response.data.results,
+      totalCount: response.data.totalCount
     });
   }
 };
@@ -48,4 +48,30 @@ function toURLSearchParams(filter, limit, offset) {
   if (offset) params.append("offset", offset.toString());
 
   return params;
+}
+
+export const getters = {
+  aidBasedTransactions: state => {
+    // Currently we don't need to do any mapping, so just return the array if all of it has Aid IDs
+    const data = state.currentTransactionsPage.data;
+    return data.some(txn => txn.aidId === null) ? [] : data;
+  },
+  manualTransactions: state => {
+    const data = state.currentTransactionsPage.data;
+    return data.some(txn => txn.aidId !== null) 
+      ? []
+      : data.map(txn => ({
+        id: txn.id,
+        nation: txn.sentBy !== undefined ? txn.sentBy : txn.receivedBy,
+        // txn.sentBy !== undefined ? AdjustmentType.Credit : AdjustmentType.Debt,
+        reason: txn.reason,
+        accountCode: (txn.code?.sendingRole ?? "") + (txn.code?.receivingRole ?? ""),
+        classification: txn.classification,
+        rate: txn.rate,
+        cashMovedTechCredit: txn.cashMovedTechCredit,
+        cashMovedCashCredit: txn.cashMovedCashCredit,
+        techMovedCashCredit: txn.techMovedCashCredit,
+        techMovedTechCredit: txn.techMovedTechCredit
+      }));
+  }
 }

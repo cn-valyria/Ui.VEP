@@ -27,20 +27,22 @@ namespace Functions
 
         [FunctionName(nameof(SearchTransactions))]
         public async Task<IActionResult> SearchTransactions(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "transactions")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "transactions/{type}")] HttpRequest request,
+            string type,
             ILogger log)
         {
             log.LogInformation($"Beginning execution for {nameof(SearchTransactions)} method...");
 
             try
             {
+                var transactionType = Enum.TryParse<TransactionType>(type, out var enumType) ? enumType : TransactionType.All;
                 var filters = ConvertToFilters(request.Query);
                 var limit = ConvertFromQueryString<int>(request.Query["limit"]);
                 var offset = ConvertFromQueryString<int>(request.Query["offset"]);
 
-                var searchResults = await _transactionsRepository.SearchTransactions(filters, limit ?? 100, offset ?? 0);
+                var searchResults = await _transactionsRepository.SearchTransactions(transactionType, filters, limit ?? 100, offset ?? 0);
 
-                return new OkObjectResult(_mapper.Map<TransactionSearchResults>(searchResults));
+                return new OkObjectResult(_mapper.Map<TransactionCollection>(searchResults));
             }
             catch (Exception e)
             {

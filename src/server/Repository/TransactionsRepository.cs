@@ -13,6 +13,36 @@ namespace Repository
 
         public TransactionsRepository(string connectionString) => _connectionString = connectionString;
 
+        public async Task<DataCollection<TransactionDetail>> SearchTransactions(
+            TransactionType transactionType,
+            TransactionFilters filters,
+            int limit,
+            int offset
+        )
+        {
+            using var sqlConnection = new MySqlConnection(_connectionString);
+
+            await sqlConnection.ExecuteAsync("search_transactions", new 
+            {
+                _type = transactionType,
+                _sent_by = filters.SentBy,
+                _received_by = filters.ReceivedBy,
+                _sent_since = filters.SentSince,
+                _sent_until = filters.SentUntil
+            }, commandType: CommandType.StoredProcedure);
+
+            var totalCount = await sqlConnection.QueryFirstAsync<int>("select count(1) from tmpTxnSearchResults");
+            var results = await sqlConnection.QueryAsync<TransactionDetail>(
+                "select * from tmpTxnSearchResults order by AidId desc, StartsOn desc limit @offset, @limit",
+                new { offset, limit });
+
+            return new DataCollection<TransactionDetail>
+            {
+                TotalCount = totalCount,
+                Results = results
+            };
+        }
+
         public async Task<TransactionSearchResponse> SearchTransactions(
             TransactionFilters filters,
             int limit,

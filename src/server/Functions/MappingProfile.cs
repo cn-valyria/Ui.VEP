@@ -13,7 +13,7 @@ namespace Functions
         public MappingProfile()
         {
             CreateMap<DtoTxnSearchResults, TransactionSearchResults>();
-            CreateMap<(int TotalCount, IEnumerable<TransactionDetail> Results), TransactionCollection>()
+            CreateMap<DataCollection<TransactionDetail>, TransactionCollection>()
                 .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.TotalCount))
                 .ForMember(dest => dest.Results, opt => opt.MapFrom((src, dest, i, context) => src.Results.Select(context.Mapper.Map<Transaction>)));
 

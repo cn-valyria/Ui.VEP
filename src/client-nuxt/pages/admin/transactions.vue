@@ -64,19 +64,19 @@
         </div>
         <div class="tabs is-boxed">
           <ul>
-            <li class="is-active"> <!-- [class.is-active]="currentTab === transactionType.AidBased" -->
-              <a>
+            <li :class="{ 'is-active': currentTab === TRANSACTION_TYPES.aidBased }">
+              <a @click="changeTab(TRANSACTION_TYPES.aidBased)">
                 <span>Aid-Based</span>
               </a>
             </li>
-            <li>
-              <a>
+            <li :class="{ 'is-active': currentTab === TRANSACTION_TYPES.manual }">
+              <a @click="changeTab(TRANSACTION_TYPES.manual)">
                 <span>Manual</span>
               </a>
             </li>
           </ul>
         </div>
-        <div class="table-container"> <!-- v-if="currentTab === transactionType.AidBased" -->
+        <div v-if="currentTab === TRANSACTION_TYPES.aidBased" class="table-container">
           <table class="table">
             <thead>
               <tr>
@@ -101,7 +101,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(transaction, i) in transactions" :key="i">
+              <tr v-for="(transaction, i) in aidBasedTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
                     <button class="button is-info">Edit</button>
@@ -128,7 +128,7 @@
             </tbody>
           </table>
         </div>
-        <div v-if="false" class="table-container">
+        <div v-if="currentTab === TRANSACTION_TYPES.manual" class="table-container">
           <table class="table">
             <thead>
               <tr>
@@ -147,24 +147,24 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="(transaction, i) in manualTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
                     <button class="button is-info">Edit</button>
                     <button class="button is-danger">Delete</button>
                   </div>
                 </td>
-                <td>FIX THIS</td><!-- {{ transaction.nation.rulerName }} -->
-                <td>FIX THIS</td><!-- {{ transaction.nation.nationName }} -->
-                <td>FIX THIS</td><!-- {{ adjustmentTypeNames[transaction.adjustmentType] }} -->
-                <td>FIX THIS</td><!-- {{ transaction.reason }} -->
-                <td>FIX THIS</td><!-- {{ transaction.accountCode }} -->
-                <td>FIX THIS</td><!-- {{ transaction.classification }} -->
-                <td>FIX THIS</td><!-- {{ transaction.rate }} -->
-                <td>FIX THIS</td><!-- {{ transaction.cashMovedTechCredit }} -->
-                <td>FIX THIS</td><!-- {{ transaction.cashMovedCashCredit }} -->
-                <td>FIX THIS</td><!-- {{ transaction.techMovedCashCredit }} -->
-                <td>FIX THIS</td><!-- {{ transaction.techMovedTechCredit }} -->
+                <td>{{ transaction.nation.rulerName }}</td>
+                <td>{{ transaction.nation.nationName }}</td>
+                <td>FIX THIS</td> <!-- {{ adjustmentTypeNames[transaction.adjustmentType] }} -->
+                <td>{{ transaction.reason }}</td>
+                <td>{{ transaction.accountCode }}</td>
+                <td>{{ transaction.classification }}</td>
+                <td>{{ transaction.rate }}</td>
+                <td>{{ transaction.cashMovedTechCredit }}</td>
+                <td>{{ transaction.cashMovedCashCredit }}</td>
+                <td>{{ transaction.techMovedCashCredit }}</td>
+                <td>{{ transaction.techMovedTechCredit }}</td>
               </tr>
             </tbody>
           </table>
@@ -279,11 +279,14 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
+import { TRANSACTION_TYPES } from "~/infrastructure/constants";
 
 export default {
   name: "TransactionsPage",
   data: () => ({
+    TRANSACTION_TYPES,
+    currentTab: TRANSACTION_TYPES.aidBased,
     currentPage: 1,
     limit: 25,
     limitOptions: [ 10, 25, 100, 500 ]
@@ -292,11 +295,18 @@ export default {
     ...mapState({
       currentTransactionsPage: state => state.admin.transactions.currentTransactionsPage
     }),
-    transactions() {
-      return this.currentTransactionsPage.data;
-    },
+    ...mapGetters({
+      aidBasedTransactions: "admin/transactions/aidBasedTransactions",
+      manualTransactions: "admin/transactions/manualTransactions"
+    }),
     totalPages() {
       return Math.ceil(this.currentTransactionsPage.totalCount / 100);
+    },
+    tabIsAidBased() {
+      return this.currentTab === TRANSACTION_TYPES.aidBased;
+    },
+    tabIsManual() {
+      return this.currentTab === TRANSACTION_TYPES.manual;
     }
   },
   async created() {
@@ -310,10 +320,20 @@ export default {
     async changePage(newPageNumber) {
       this.currentPage = newPageNumber;
       await this.reloadCurrentTransactionsPage({
+        type: this.currentTab,
         filter: {},
         limit: this.limit,
         offset: this.limit * (this.currentPage - 1)
       });
+    },
+    async changeTab(tabName) {
+      if (this.currentTab === tabName) {
+        this.$log.warn("The same tab that is already active was clicked, so nothing will happen.");
+        return;
+      }
+
+      this.currentTab = tabName;
+      await this.changePage(1);
     },
     toAidStatusDescription(statusId) {
       switch (statusId) {
