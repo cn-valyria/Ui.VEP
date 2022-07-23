@@ -104,7 +104,7 @@
               <tr v-for="(transaction, i) in aidBasedTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
-                    <button class="button is-info">Edit</button>
+                    <button class="button is-info" @click="editTransaction(transaction)">Edit</button>
                   </div>
                 </td>
                 <td>{{ transaction.sentBy.rulerName || "" }}</td>
@@ -275,6 +275,7 @@
         </div>
       </div>
     </div>
+    <AdminTransactionEditDialog :show="transactionDialogIsVisible" :transaction="transactionBeingEdited" />
   </div>
 </template>
 
@@ -289,7 +290,9 @@ export default {
     currentTab: TRANSACTION_TYPES.aidBased,
     currentPage: 1,
     limit: 25,
-    limitOptions: [ 10, 25, 100, 500 ]
+    limitOptions: [ 10, 25, 100, 500 ],
+    transactionDialogIsVisible: false,
+    transactionBeingEdited: undefined
   }),
   computed: {
     ...mapState({
@@ -343,6 +346,10 @@ export default {
         case 4: return "Expired";
         default: return "Unknown";
       }
+    },
+    editTransaction(txn) {
+      this.transactionBeingEdited = txn;
+      this.transactionDialogIsVisible = true;
     }
   }
 }
