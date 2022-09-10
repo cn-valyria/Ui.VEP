@@ -1,3 +1,4 @@
+using Functions.Auth;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace Functions
         {
             builder.Services
                 .AddVepDbRepositories(builder.GetContext().Configuration)
+                .AddInternalProviders()
                 .AddAutoMapper(typeof(Startup));
         }
     }
@@ -24,8 +26,13 @@ namespace Functions
             var vepDbConnectionString = configuration.GetConnectionString("VepDb");
 
             return services
+                .AddTransient<IAuthorizationRepository>(sp => new AuthorizationRepository(vepDbConnectionString))
                 .AddTransient<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString))
                 .AddTransient<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString));
         }
+
+        public static IServiceCollection AddInternalProviders(this IServiceCollection services) => services
+            .AddTransient<ITokenProvider, TokenProvider>()
+            .AddTransient<IAuthenticationProvider, AuthenticationProvider>();
     }
 }

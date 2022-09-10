@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="section">
-      <h1 class="title">VEP Admin Portal</h1>
+      <h1 class="title">Valyria</h1>
       <p>
-        This is the landing page for the admin section. Please use the Admin nav to get to your desired page.
+        This is the portal for the Valyrian ecosystem of CN tools. Please log in or click My Account to view more tools.
       </p>
     </div>
   </div>

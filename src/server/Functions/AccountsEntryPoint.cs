@@ -12,21 +12,28 @@ using Repository.DTO;
 using Repository.Infrastructure;
 using System.Linq;
 using System.Web.Http;
+using Functions.Auth;
+using Functions.Utils;
 
 namespace Functions
 {
     public class AccountsEntryPoint
     {
         private readonly IAccountsRepository _accountsRepository;
+        private readonly ITokenProvider _tokenProvider;
 
-        public AccountsEntryPoint(IAccountsRepository accountsRepository) => _accountsRepository = accountsRepository;
+        public AccountsEntryPoint(IAccountsRepository accountsRepository, ITokenProvider tokenProvider)
+            => (_accountsRepository, _tokenProvider) = (accountsRepository, tokenProvider);
 
         [FunctionName(nameof(GetAllAccounts))]
         public async Task<IActionResult> GetAllAccounts(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "accounts")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation($"Beginning execution for {nameof(GetAllAccounts)} method...");
+
+            if (!_tokenProvider.ValidateToken(req.GetJwtBearerToken()))
+                return new UnauthorizedResult();
 
             try
             {
@@ -46,7 +53,7 @@ namespace Functions
 
         [FunctionName(nameof(CreateAccount))]
         public async Task<IActionResult> CreateAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "accounts")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "accounts")] HttpRequest request,
             ILogger log)
         {
             log.LogInformation($"Beginning execution for {nameof(CreateAccount)} method...");
@@ -80,7 +87,7 @@ namespace Functions
 
         [FunctionName(nameof(UpdateAccount))]
         public async Task<IActionResult> UpdateAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "accounts")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "accounts")] HttpRequest request,
             ILogger log)
         {
             log.LogInformation($"Beginning execution for {nameof(UpdateAccount)} method...");
@@ -109,7 +116,7 @@ namespace Functions
 
         [FunctionName(nameof(RemoveAccount))]
         public async Task<IActionResult> RemoveAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "accounts/{id}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "accounts/{id}")] HttpRequest request,
             int? id,
             ILogger log)
         {
@@ -138,7 +145,7 @@ namespace Functions
 
         [FunctionName(nameof(FindProspectAccount))]
         public async Task<IActionResult> FindProspectAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts/prospect")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "accounts/prospect")] HttpRequest request,
             ILogger log)
         {
             log.LogInformation($"Beginning execution for {nameof(FindProspectAccount)} method...");
