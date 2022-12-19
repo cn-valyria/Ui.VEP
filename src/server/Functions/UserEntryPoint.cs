@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Functions.Auth;
@@ -24,17 +25,14 @@ namespace Functions
 
         [FunctionName(nameof(Authenticate))]
         public async Task<IActionResult> Authenticate(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/authenticate")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/authenticate")] HttpRequest request,
             ILogger logger)
         {
             logger.LogInformation($"Beginning execution for {nameof(Authenticate)} method...");
 
-            var account = new VepAccount
-            {
-                NationId = request.Query["nationId"],
-                RulerName = request.Query["rulerName"],
-                UniqueCode = request.Query["uniqueCode"]
-            };
+            var account = await JsonSerializer.DeserializeAsync<AuthorizeUserRequest>(
+                request.Body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (string.IsNullOrEmpty(account.UniqueCode))
                 return new BadRequestObjectResult("Must provide a uniqueCode parameter in the request");

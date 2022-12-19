@@ -14,7 +14,7 @@ namespace Functions.Auth
             _authorizationRepository = authorizationRepository;
         }
 
-        public async Task<bool> IsAuthenticated(VepAccount account)
+        public async Task<bool> IsAuthenticated(AuthorizeUserRequest account)
         {
             if (string.IsNullOrEmpty(account.UniqueCode))
                 return false;
@@ -33,6 +33,6 @@ namespace Functions.Auth
 
     public interface IAuthenticationProvider
     {
-        Task<bool> IsAuthenticated(VepAccount account);
+        Task<bool> IsAuthenticated(AuthorizeUserRequest account);
     }
 }

@@ -17,7 +17,7 @@ namespace Functions.Auth
             _jwtSecret = configuration["JwtSecret"];
         }
 
-        public string GenerateToken(VepAccount account)
+        public string GenerateToken(AuthorizeUserRequest account)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSecret);
@@ -68,7 +68,7 @@ namespace Functions.Auth
 
     public interface ITokenProvider
     {
-        string GenerateToken(VepAccount account);
+        string GenerateToken(AuthorizeUserRequest account);
         bool ValidateToken(string token);
     }
 }

@@ -31,10 +31,20 @@
 
         <a class="navbar-item">
           <div class="buttons">
-            <a class="button is-primary">My Account</a>
+            <a class="button is-primary" @click="test()">My Account</a>
           </div>
         </a>
       </div>
     </div>
   </nav>
 </template>
+
+<script>
+export default {
+  methods: {
+    test() {
+      this.$auth.login({});
+    }
+  }
+}
+</script>
