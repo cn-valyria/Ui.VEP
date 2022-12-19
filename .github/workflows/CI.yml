@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - id: Deploy client
+    - name: Deploy client
       uses: ashkantaravati/NuxtToGithubPages@v1.0
       with:
         username: 'cn-valyria'
