@@ -10,6 +10,7 @@ env:
   AZURE_FUNCTIONAPP_NAME: tbd
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'build'
   DOTNET_VERSION: '6.0.201'
+  NODE_VERSION: 14
 
 jobs:
   build:
@@ -26,10 +27,22 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Deploy client
-      uses: ashkantaravati/NuxtToGithubPages@v1.0
-      with:
-        username: 'cn-valyria'
-        reponame: 'Ui.Vep'
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup node env
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate
+        run: npm run generate
+
+      - name: Deploy
+        uses: peaceiris/actions/gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
