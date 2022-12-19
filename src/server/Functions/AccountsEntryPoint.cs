@@ -32,8 +32,8 @@ namespace Functions
         {
             log.LogInformation($"Beginning execution for {nameof(GetAllAccounts)} method...");
 
-            if (!_tokenProvider.ValidateToken(req.GetJwtBearerToken()))
-                return new UnauthorizedResult();
+            // if (!_tokenProvider.ValidateToken(req.GetJwtBearerToken()))
+            //     return new UnauthorizedResult();
 
             try
             {
