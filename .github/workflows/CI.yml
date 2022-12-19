@@ -50,7 +50,7 @@ jobs:
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: bash
-        run: dotnet publish src/Function/Function.csproj --configuration Release --output ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        run: dotnet publish src/Functions/Functions.csproj --configuration Release --output ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
