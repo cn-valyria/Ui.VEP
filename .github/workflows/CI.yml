@@ -35,14 +35,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate
-        run: npm run generate
+      - name: Install dependencies and generate dist
+        working-directory: ./src/client
+        run: |
+          npm install
+          npm run generate
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./src/client/dist
