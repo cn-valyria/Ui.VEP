@@ -1,0 +1,35 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+    - master
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_NAME: tbd
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'build'
+  DOTNET_VERSION: '6.0.201'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Solution
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+  deploy-client:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - id: Deploy client
+      uses: ashkantaravati/NuxtToGithubPages@v1.0
+      with:
+        username: 'cn-valyria'
+        reponame: 'Ui.Vep'
+        token: ${{ secrets.GITHUB_TOKEN }}
