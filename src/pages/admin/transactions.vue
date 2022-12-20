@@ -129,6 +129,7 @@
           </table>
         </div>
         <div v-if="currentTab === TRANSACTION_TYPES.manual" class="table-container">
+          <button class="button is-success" @click="createTransaction()">Create</button>
           <table class="table">
             <thead>
               <tr>
@@ -275,7 +276,8 @@
         </div>
       </div>
     </div>
-    <AdminTransactionEditDialog :show="transactionDialogIsVisible" :transaction="transactionBeingEdited" />
+    <AdminAidBasedTransactionDialog :show="transactionDialogIsVisible" :transaction="transactionBeingEdited" />
+    <AdminManualTransactionDialog :show="true" :transaction="{}" :accounts="accounts" />
   </div>
 </template>
 
@@ -296,7 +298,8 @@ export default {
   }),
   computed: {
     ...mapState({
-      currentTransactionsPage: state => state.admin.transactions.currentTransactionsPage
+      currentTransactionsPage: state => state.admin.transactions.currentTransactionsPage,
+      accounts: state => state.admin.accounts.accounts
     }),
     ...mapGetters({
       aidBasedTransactions: "admin/transactions/aidBasedTransactions",
@@ -315,10 +318,14 @@ export default {
   async created() {
     await this.changePage(1);
     this.$log.info(this.currentTransactionsPage);
+
+    await this.loadAllAccounts();
+    this.$log.info(this.accounts);
   },
   methods: {
     ...mapActions({
-      reloadCurrentTransactionsPage: "admin/transactions/reloadCurrentTransactionsPage"
+      reloadCurrentTransactionsPage: "admin/transactions/reloadCurrentTransactionsPage",
+      loadAllAccounts: "admin/accounts/loadAllAccounts"
     }),
     async changePage(newPageNumber) {
       this.currentPage = newPageNumber;
@@ -346,6 +353,10 @@ export default {
         case 4: return "Expired";
         default: return "Unknown";
       }
+    },
+    createTransaction() {
+      this.transactionBeingEdited = {};
+      this.transactionDialogIsVisible = true;
     },
     editTransaction(txn) {
       this.transactionBeingEdited = txn;

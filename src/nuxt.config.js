@@ -22,9 +22,8 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'bulma',
-    'bulma-calendar/dist/css/bulma-calendar.min.css',
-    '@/assets/css/main.scss'
+    '@/assets/css/main.scss',
+    'bulma-calendar/dist/css/bulma-calendar.min.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -46,7 +45,8 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/toast',
-    'nuxt-logger'
+    'nuxt-logger',
+    'nuxt-buefy'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

@@ -4,7 +4,7 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">Update Transaction</p>
-        <button class="delete" aria-label="close"></button>
+        <button class="delete" aria-label="close" @click="$emit('close')"></button>
       </header>
       <section v-if="transactionBeingEdited !== undefined" class="modal-card-body">
         <div class="content">
