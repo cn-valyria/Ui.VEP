@@ -157,7 +157,7 @@
                 </td>
                 <td>{{ transaction.nation.rulerName }}</td>
                 <td>{{ transaction.nation.nationName }}</td>
-                <td>FIX THIS</td> <!-- {{ adjustmentTypeNames[transaction.adjustmentType] }} -->
+                <td>{{ transaction.adjustmentType }}</td>
                 <td>{{ transaction.reason }}</td>
                 <td>{{ transaction.accountCode }}</td>
                 <td>{{ transaction.classification }}</td>
@@ -276,8 +276,17 @@
         </div>
       </div>
     </div>
-    <AdminAidBasedTransactionDialog :show="transactionDialogIsVisible" :transaction="transactionBeingEdited" />
-    <AdminManualTransactionDialog :show="true" :transaction="{}" :accounts="accounts" />
+    <AdminAidBasedTransactionDialog
+      :show="aidBasedDialogIsVisible" 
+      :transaction="transactionBeingEdited" 
+      @close="closeDialog(TRANSACTION_TYPES.aidBased)"
+    />
+    <AdminManualTransactionDialog 
+      :show="manualDialogIsVisible" 
+      :transaction="transactionBeingEdited" 
+      :accounts="accounts" 
+      @close="closeDialog(TRANSACTION_TYPES.manual)"
+    />
   </div>
 </template>
 
@@ -293,7 +302,8 @@ export default {
     currentPage: 1,
     limit: 25,
     limitOptions: [ 10, 25, 100, 500 ],
-    transactionDialogIsVisible: false,
+    aidBasedDialogIsVisible: false,
+    manualDialogIsVisible: false,
     transactionBeingEdited: undefined
   }),
   computed: {
@@ -356,11 +366,20 @@ export default {
     },
     createTransaction() {
       this.transactionBeingEdited = {};
-      this.transactionDialogIsVisible = true;
+      this.manualDialogIsVisible = true;
     },
     editTransaction(txn) {
       this.transactionBeingEdited = txn;
-      this.transactionDialogIsVisible = true;
+      this.aidBasedDialogIsVisible = true;
+    },
+    closeDialog(transactionType) {
+      if (transactionType === TRANSACTION_TYPES.aidBased) {
+        this.aidBasedDialogIsVisible = false;
+      } else if (transactionType === TRANSACTION_TYPES.manual) {
+        this.manualDialogIsVisible = false;
+      }
+      
+      this.transactionBeingEdited = undefined;
     }
   }
 }

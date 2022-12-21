@@ -2,7 +2,8 @@ import {
   RELOAD_TRANSACTIONS_PAGE,
   UPDATE_TRANSACTION,
   REMOVE_TRANSACTION
-} from "./mutation-types"
+} from "./mutation-types";
+import { ADJUSTMENT_TYPES } from "~/infrastructure/constants";
 
 export const state = () => ({
   currentTransactionsPage: {
@@ -63,7 +64,7 @@ export const getters = {
       : data.map(txn => ({
         id: txn.id,
         nation: txn.sentBy !== undefined ? txn.sentBy : txn.receivedBy,
-        // txn.sentBy !== undefined ? AdjustmentType.Credit : AdjustmentType.Debt,
+        adjustmentType: txn.sentBy !== undefined ? ADJUSTMENT_TYPES.credit : ADJUSTMENT_TYPES.debt,
         reason: txn.reason,
         accountCode: (txn.code?.sendingRole ?? "") + (txn.code?.receivingRole ?? ""),
         classification: txn.classification,

@@ -4,7 +4,7 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">New Manual Transaction</p>
-        <button class="delete" aria-label="close" @click="$emit('close')"></button>
+        <button class="delete" aria-label="close" @click="close()"></button>
       </header>
       <section class="modal-card-body">
         <div class="content">
@@ -44,17 +44,87 @@
               </div>
             </div>
           </fieldset>
+          <fieldset>
+            <div class="field">
+              <label class="label">Adjustment Type</label>
+              <div class="control is-expanded">
+                <div class="select is-fullwidth">
+                  <select v-model="transactionBeingEdited.adjustmentType">
+                    <option disabled value=""></option>
+                    <option v-for="adjType of adjustmentTypes">
+                      {{ adjType }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label class="label">Reason</label>
+            <div class="control">
+              <input v-model="transactionBeingEdited.reason" class="input" type="text" />
+            </div>
+          </div>
+          <h2>Transaction Metadata</h2>
+          <div class="field is-horizontal">
+            <div class="field-body">
+              <div class="field">
+                <label class="label">Classification</label>
+                <div class="control">
+                  <input v-model="transactionBeingEdited.classification" class="input" type="text" />
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Rate</label>
+                <div class="control">
+                  <input v-model="transactionBeingEdited.rate" class="input" type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <fieldset disabled>
+            <div class="field is-horizontal">
+              <div class="field-body">
+                <div class="field">
+                  <label class="label">Cash Moved <br />(Cash)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.cashMovedCashCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Cash Moved <br />(Tech)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.cashMovedTechCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Tech Moved <br />(Cash)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.techMovedCashCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Tech Moved <br />(Tech)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.techMovedTechCredit" class="input" type="text" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" @click="create()">Save</button>
-        <button class="button">Cancel</button>
+        <button class="button" @click="close()">Cancel</button>
       </footer>
     </div>
   </div>
 </template>
 
 <script>
+import { ADJUSTMENT_TYPES } from '~/infrastructure/constants';
+
 export default {
   props: {
     show: Boolean,
@@ -69,16 +139,18 @@ export default {
   },
   data: () => ({
     transactionBeingEdited: Object,
-    accountTextbox: ""
+    accountTextbox: "",
+    adjustmentTypes: [ADJUSTMENT_TYPES.credit, ADJUSTMENT_TYPES.debt]
   }),
   computed: {
     selectedAccount: {
       get() {
-        if (this.transactionNation.nationId !== undefined) {
-          return this.accounts.find(account => account.id === this.transactionNation.nationId);
-        } else {
-          return null;
+        const txn = this.transactionBeingEdited;
+        if (txn.nation === undefined || txn.nation === null) {
+          return undefined;
         }
+
+        return this.accounts.find(account => account.nationId === txn.nation.nationId);
       },
       set(val) {
         this.$log.debug(val);
@@ -86,31 +158,23 @@ export default {
           this.$set(this.transactionBeingEdited, "nation", null);
         } else {
           this.$set(this.transactionBeingEdited, "nation", {
-            nationId: val.id,
+            nationId: val.nationId,
             nationName: val.nationName,
             rulerName: val.rulerName,
             allianceName: val.allianceName
           });
         }
+        this.recalculateCredits();
       }
     },
     filteredAccounts() {
       return this.accounts.filter(account => account.rulerName.toLowerCase().indexOf(this.accountTextbox.toLowerCase()) >= 0);
     },
-    transactionNation: {
-      get() {
-        if (this.transactionBeingEdited.nation) {
-          return this.transactionBeingEdited.nation;
-        } else {
-          return {};
-        }
-      },
-      set(val) {
-        if (this.transactionBeingEdited === undefined) {
-          return
-        }
-
-        this.transactionBeingEdited.nation = val;
+    transactionNation() {
+      if (this.transactionBeingEdited.nation) {
+        return this.transactionBeingEdited.nation;
+      } else {
+        return {};
       }
     },
     isInUpdateState() {
@@ -121,17 +185,83 @@ export default {
     transaction(val) {
       this.$log.debug(val);
       this.transactionBeingEdited = { ...val };
+      this.recalculateCredits();
     },
-    accounts(val) {
-      this.$log.debug(val);
+    'transactionBeingEdited.adjustmentType'(val) {
+      this.recalculateCredits();
     },
-    transactionBeingEdited(val) {
-      this.$log.debug(val);
+    'transactionBeingEdited.rate'(val) {
+      this.recalculateCredits();
     }
   },
   methods: {
     create() {
       this.$log.debug(this.transactionBeingEdited);
+    },
+    close() {
+      this.accountTextbox = "";
+      this.$emit("close");
+    },
+    recalculateCredits() {
+      const txn = this.transactionBeingEdited;
+      this.$log.debug(txn);
+      if (txn.nation === undefined || txn.nation === null) {
+        this.zeroOutCredits(txn);
+        return;
+      }
+
+      if (this.selectedAccount === undefined) {
+        this.zeroOutCredits(txn);
+        return;
+      }
+
+      const rate = parseInt(txn.rate);
+      if (isNaN(rate) || rate === 0) {
+        this.zeroOutCredits(txn);
+      } else if (txn.adjustmentType === ADJUSTMENT_TYPES.credit) {
+        switch (this.selectedAccount.role) {
+          case "B":
+          case "W":
+            this.updateCredits(txn, rate, rate / 9 * 100, 0, 0);
+            break;
+          case "S":
+          case "N":
+          case "Q":
+            this.updateCredits(txn, 0, 0, rate, rate / 9 * 100);
+            break;
+          default:
+            this.zeroOutCredits(txn);
+            break;
+        }
+      } else if (txn.adjustmentType === ADJUSTMENT_TYPES.debt) {
+        switch (this.selectedAccount.role) {
+          case "B":
+          case "W":
+            this.updateCredits(txn, 0, 0, rate, rate / 9 * 100);
+            break;
+          case "S":
+          case "N":
+          case "Q":
+            this.updateCredits(txn, rate, rate / 9 * 100, 0, 0);
+            break;
+          default:
+            this.zeroOutCredits(txn);
+            break;
+        }
+      } else {
+        this.zeroOutCredits(txn);
+      }
+
+      this.$log.debug(this.transactionBeingEdited);
+    },
+    updateCredits(txn, cc, ct, tc, tt) {
+      txn.cashMovedCashCredit = cc;
+      txn.cashMovedTechCredit = ct;
+      txn.techMovedCashCredit = tc;
+      txn.techMovedTechCredit = tt;
+    },
+    zeroOutCredits(txn) {
+      this.updateCredits(txn, 0, 0, 0, 0);
     }
   }
 }
