@@ -8,3 +8,7 @@ export const ADJUSTMENT_TYPES = {
   credit: "Credit",
   debt: "Debt"
 };
+
+export const ERROR_MESSAGES = {
+  default: "VEP encountered an error while saving. Please try again, or contact @lilweirdward if the error persists."
+};

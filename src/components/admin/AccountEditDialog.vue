@@ -317,6 +317,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { ERROR_MESSAGES } from '~/infrastructure/constants';
 
 export default {
   props: {
@@ -408,7 +409,7 @@ export default {
         await this.updateAccount(this.accountBeingEdited);
       } catch (e) {
         this.$log.error(e);
-        this.$toast.error("VEP encountered an error while saving. Please try again, or contact @lilweirdward if the error persists.");
+        this.$toast.error(ERROR_MESSAGES.default);
       }
       
       this.buttonIsLoading = false;
@@ -427,7 +428,7 @@ export default {
         await this.createAccount(this.accountBeingEdited);
       } catch (e) {
         this.$log.error(e);
-        this.$toast.error("VEP encountered an error while saving. Please try again, or contact @lilweirdward if the error persists.");
+        this.$toast.error(ERROR_MESSAGES.default);
       }
 
       this.buttonIsLoading = false;

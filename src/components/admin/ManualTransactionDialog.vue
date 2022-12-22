@@ -123,7 +123,8 @@
 </template>
 
 <script>
-import { ADJUSTMENT_TYPES } from '~/infrastructure/constants';
+import { mapActions } from 'vuex';
+import { ADJUSTMENT_TYPES, ERROR_MESSAGES } from '~/infrastructure/constants';
 
 export default {
   props: {
@@ -195,8 +196,32 @@ export default {
     }
   },
   methods: {
-    create() {
-      this.$log.debug(this.transactionBeingEdited);
+    ...mapActions({
+      createTransaction: "admin/transactions/createTransaction"
+    }),
+    async create() {
+      const txn = this.transactionBeingEdited;
+      this.$log.debug(txn);
+      try {
+        await this.createTransaction({
+          aidId: null,
+          sendingNationId: txn.adjustmentType === ADJUSTMENT_TYPES.credit ? txn.nation.nationId : null,
+          receivingNationId: txn.adjustmentType === ADJUSTMENT_TYPES.debt ? txn.nation.nationId : null,
+          reasonOverride: txn.reason,
+          lu: this.selectedAccount.role,
+          classification: parseInt(txn.classification),
+          cashMovedCashCredit: txn.cashMovedCashCredit,
+          cashMovedTechCredit: txn.cashMovedTechCredit,
+          techMovedCashCredit: txn.techMovedCashCredit,
+          techMovedTechCredit: txn.techMovedTechCredit
+        });
+      } catch (e) {
+        this.$log.error(e);
+        this.$toast.error(ERROR_MESSAGES.default);
+      }
+
+      this.$emit("close");
+      this.$toast.success("Transaction created successfully!");
     },
     close() {
       this.accountTextbox = "";

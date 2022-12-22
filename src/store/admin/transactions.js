@@ -1,7 +1,8 @@
 import {
   RELOAD_TRANSACTIONS_PAGE,
   UPDATE_TRANSACTION,
-  REMOVE_TRANSACTION
+  REMOVE_TRANSACTION,
+  CREATE_TRANSACTION
 } from "./mutation-types";
 import { ADJUSTMENT_TYPES } from "~/infrastructure/constants";
 
@@ -34,6 +35,10 @@ export const actions = {
       data: response.data.results,
       totalCount: response.data.totalCount
     });
+  },
+  async createTransaction(_, payload) {
+    const response = await this.$axios.post("transactions", payload);
+    this.$log.debug(response);
   }
 };
 
