@@ -5,15 +5,12 @@ namespace Repository;
 
 public interface ITransactionsRepository
 {
-    Task<DataCollection<TransactionDetail>> SearchTransactions(
+    Task<DataCollection<TransactionDetail>> SearchTransactionsAsync(
         TransactionType transactionType,
         TransactionFilters filters,
         int limit,
         int offset
     );
 
-    Task<TransactionSearchResponse> SearchTransactions(
-        TransactionFilters filters,
-        int limit,
-        int offset);
+    Task<int> CreateTransactionAsync(TransactionCreateRequest transaction);
 }

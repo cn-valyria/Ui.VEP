@@ -12,12 +12,11 @@ public class TransactionsRepository : ITransactionsRepository
 
     public TransactionsRepository(string connectionString) => _connectionString = connectionString;
 
-    public async Task<DataCollection<TransactionDetail>> SearchTransactions(
+    public async Task<DataCollection<TransactionDetail>> SearchTransactionsAsync(
         TransactionType transactionType,
         TransactionFilters filters,
         int limit,
-        int offset
-    )
+        int offset)
     {
         using var sqlConnection = new MySqlConnection(_connectionString);
 
@@ -42,36 +41,52 @@ public class TransactionsRepository : ITransactionsRepository
         };
     }
 
-    public async Task<TransactionSearchResponse> SearchTransactions(
-        TransactionFilters filters,
-        int limit,
-        int offset)
+    public async Task<int> CreateTransactionAsync(TransactionCreateRequest transaction)
     {
         using var sqlConnection = new MySqlConnection(_connectionString);
-
-        await sqlConnection.ExecuteAsync("search_transactions", new 
+        const string createTransactionQuery = @"
+insert into transaction (
+    aid_id,
+    sending_nation_id,
+    receiving_nation_id,
+    reason_override,
+    lu,
+    co,
+    rate,
+    ct,
+    cc,
+    tc,
+    tt
+)
+values (@aid_id, @sending_nation_id, @receiving_nation_id, @reason_override, @lu, @co, @rate, @ct, @cc, @tc, @tt)";
+        
+        await sqlConnection.ExecuteAsync(createTransactionQuery, new
         {
-            _type = TransactionType.All,
-            _sent_by = filters.SentBy,
-            _received_by = filters.ReceivedBy,
-            _sent_since = filters.SentSince,
-            _sent_until = filters.SentUntil
-        }, commandType: CommandType.StoredProcedure);
+            aid_id = transaction.AidId,
+            sending_nation_id = transaction.SendingNationId,
+            receiving_nation_id = transaction.ReceivingNationId,
+            reason_override = transaction.ReasonOverride,
+            lu = transaction.Lu,
+            co = transaction.Classification,
+            rate = transaction.Rate,
+            ct = transaction.CashMovedTechCredit,
+            cc = transaction.CashMovedCashCredit,
+            tc = transaction.TechMovedCashCredit,
+            tt = transaction.TechMovedTechCredit
+        });
 
-        var aidBasedCount = await sqlConnection.QueryFirstAsync<int>("select count(1) from tmpTxnSearchResults where AidId is not null");
-        var aidBasedResults = await sqlConnection.QueryAsync<TransactionDetail>(
-            "select * from tmpTxnSearchResults where AidId is not null order by AidId desc limit @offset, @limit",
-            new { offset, limit });
+        const string getTransactionIdQuery = @"
+select id 
+from transaction
+where (aid_id is null and @aid_id is null or aid_id = @aid_id)
+and (sending_nation_id is null and @sending_nation_id is null or sending_nation_id = @sending_nation_id)
+and (receiving_nation_id is null and @receiving_nation_id is null or receiving_nation_id = @receiving_nation_id)";
 
-        var manualCount = await sqlConnection.QueryFirstAsync<int>("select count(1) from tmpTxnSearchResults where AidId is null");
-        var manualResults = await sqlConnection.QueryAsync<TransactionDetail>(
-            "select * from tmpTxnSearchResults where AidId is null order by coalesce(SentByRulerName, ReceivedByRulerName) limit @offset, @limit",
-            new { offset, limit });
-
-        return new TransactionSearchResponse
+        return await sqlConnection.QueryFirstAsync<int>(getTransactionIdQuery, new
         {
-            AidBasedTransactions = (aidBasedCount, aidBasedResults),
-            ManualTransactions = (manualCount, manualResults)
-        };
+            aid_id = transaction.AidId,
+            sending_nation_id = transaction.SendingNationId,
+            receiving_nation_id = transaction.ReceivingNationId,
+        });
     }
 }

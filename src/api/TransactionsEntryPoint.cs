@@ -11,6 +11,7 @@ using Repository;
 using System.ComponentModel;
 using AutoMapper;
 using api.Contracts;
+using System.Text.Json;
 
 namespace api;
 
@@ -37,13 +38,42 @@ public class TransactionsEntryPoint
             var limit = ConvertFromQueryString<int>(request.Query["limit"]);
             var offset = ConvertFromQueryString<int>(request.Query["offset"]);
 
-            var searchResults = await _transactionsRepository.SearchTransactions(transactionType, filters, limit ?? 100, offset ?? 0);
+            var searchResults = await _transactionsRepository.SearchTransactionsAsync(transactionType, filters, limit ?? 100, offset ?? 0);
 
             return new OkObjectResult(_mapper.Map<TransactionCollection>(searchResults));
         }
         catch (Exception e)
         {
             var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(SearchTransactions)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(CreateTransaction))]
+    public async Task<IActionResult> CreateTransaction(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "transactions")] HttpRequest request,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(CreateTransaction)} method...");
+
+        try
+        {
+            var newTransactionRequest = await JsonSerializer.DeserializeAsync<TransactionCreateRequest>(
+                request.Body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            log.LogInformation("Received request to create transaction: {@transaction}", newTransactionRequest);
+
+            var createdTransactionId = await _transactionsRepository.CreateTransactionAsync(newTransactionRequest);
+
+            log.LogInformation("Successfully created transaction with ID {id}.", createdTransactionId);
+
+            return new OkObjectResult(createdTransactionId);
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(CreateTransaction)}", e);
             log.LogError(e, wrapperException.Message);
             return new ExceptionResult(wrapperException, true);
         }
