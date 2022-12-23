@@ -3,7 +3,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">New Manual Transaction</p>
+        <p class="modal-card-title">{{ transactionBeingEdited.id !== undefined ? "Update" : "New"}} Manual Transaction</p>
         <button class="delete" aria-label="close" @click="close()"></button>
       </header>
       <section class="modal-card-body">
@@ -115,7 +115,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success" @click="create()">Save</button>
+        <button class="button is-success" @click="save()">Save</button>
         <button class="button" @click="close()">Cancel</button>
       </footer>
     </div>
@@ -186,6 +186,13 @@ export default {
     transaction(val) {
       this.$log.debug(val);
       this.transactionBeingEdited = { ...val };
+
+      // Update the account textbox if the loaded transaction already has an account defined
+      if (this.selectedAccount !== undefined) {
+        this.accountTextbox = this.selectedAccount.rulerName;
+      }
+
+      // Recalculate the credits when the transaction changes, since they're always readonly
       this.recalculateCredits();
     },
     'transactionBeingEdited.adjustmentType'(val) {
@@ -197,31 +204,41 @@ export default {
   },
   methods: {
     ...mapActions({
-      createTransaction: "admin/transactions/createTransaction"
+      createTransaction: "admin/transactions/createTransaction",
+      updateTransaction: "admin/transactions/updateTransaction"
     }),
-    async create() {
+    async save() {
       const txn = this.transactionBeingEdited;
       this.$log.debug(txn);
+
       try {
-        await this.createTransaction({
+        const payload = {
           aidId: null,
           sendingNationId: txn.adjustmentType === ADJUSTMENT_TYPES.credit ? txn.nation.nationId : null,
           receivingNationId: txn.adjustmentType === ADJUSTMENT_TYPES.debt ? txn.nation.nationId : null,
           reasonOverride: txn.reason,
           lu: this.selectedAccount.role,
           classification: parseInt(txn.classification),
+          rate: parseInt(txn.rate),
           cashMovedCashCredit: txn.cashMovedCashCredit,
           cashMovedTechCredit: txn.cashMovedTechCredit,
           techMovedCashCredit: txn.techMovedCashCredit,
           techMovedTechCredit: txn.techMovedTechCredit
-        });
+        };
+
+        if (txn.id !== undefined) {
+          payload.id = txn.id;
+          await this.updateTransaction(payload);
+        } else {
+          await this.createTransaction(payload);
+        }
       } catch (e) {
         this.$log.error(e);
         this.$toast.error(ERROR_MESSAGES.default);
       }
 
       this.$emit("close");
-      this.$toast.success("Transaction created successfully!");
+      this.$toast.success("Transaction saved successfully!");
     },
     close() {
       this.accountTextbox = "";

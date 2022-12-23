@@ -12,6 +12,7 @@ using System.ComponentModel;
 using AutoMapper;
 using api.Contracts;
 using System.Text.Json;
+using Repository.Infrastructure;
 
 namespace api;
 
@@ -74,6 +75,72 @@ public class TransactionsEntryPoint
         catch (Exception e)
         {
             var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(CreateTransaction)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(UpdateTransaction))]
+    public async Task<IActionResult> UpdateTransaction(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "transactions")] HttpRequest request,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(UpdateTransaction)} method...");
+
+        try
+        {
+            var updateTransactionRequest = await JsonSerializer.DeserializeAsync<TransactionUpdateRequest>(
+                request.Body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            log.LogInformation("Received request to update transaction: {@transaction}", updateTransactionRequest);
+
+            await _transactionsRepository.UpdateTransactionAsync(updateTransactionRequest);
+
+            log.LogInformation("Successfully updated transaction.");
+
+            return new OkResult();
+        }
+        catch (NotFoundException e)
+        {
+            log.LogWarning(e.Message);
+            return new NotFoundObjectResult(e.Message);
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(UpdateTransaction)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(DeleteTransaction))]
+    public async Task<IActionResult> DeleteTransaction(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "transactions/{id}")] HttpRequest request,
+        int? id,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(DeleteTransaction)} method...");
+
+        if (id is null)
+        {
+            log.LogError($"ID was not provided in the ${nameof(DeleteTransaction)} request.");
+            return new BadRequestObjectResult("Must provide an ID to delete in the request");
+        }
+
+        try
+        {
+            await _transactionsRepository.DeleteTransactionAsync(id.Value);
+            return new OkResult();
+        }
+        catch (NotFoundException e)
+        {
+            log.LogWarning(e.Message);
+            return new NotFoundObjectResult(e.Message);
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(DeleteTransaction)}", e);
             log.LogError(e, wrapperException.Message);
             return new ExceptionResult(wrapperException, true);
         }

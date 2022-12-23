@@ -13,4 +13,8 @@ public interface ITransactionsRepository
     );
 
     Task<int> CreateTransactionAsync(TransactionCreateRequest transaction);
+
+    Task UpdateTransactionAsync(TransactionUpdateRequest transaction);
+
+    Task DeleteTransactionAsync(int transactionId);
 }

@@ -39,6 +39,14 @@ export const actions = {
   async createTransaction(_, payload) {
     const response = await this.$axios.post("transactions", payload);
     this.$log.debug(response);
+  },
+  async updateTransaction(_, payload) {
+    const response = await this.$axios.put("transactions", payload);
+    this.$log.debug(response);
+  },
+  async deleteTransaction(_, id) {
+    const response = await this.$axios.delete(`transactions/${id}`);
+    this.$log.debug(response);
   }
 };
 
@@ -68,8 +76,8 @@ export const getters = {
       ? []
       : data.map(txn => ({
         id: txn.id,
-        nation: txn.sentBy !== undefined ? txn.sentBy : txn.receivedBy,
-        adjustmentType: txn.sentBy !== undefined ? ADJUSTMENT_TYPES.credit : ADJUSTMENT_TYPES.debt,
+        nation: txn.sentBy !== null ? txn.sentBy : txn.receivedBy,
+        adjustmentType: txn.sentBy !== null ? ADJUSTMENT_TYPES.credit : ADJUSTMENT_TYPES.debt,
         reason: txn.reason,
         accountCode: (txn.code?.sendingRole ?? "") + (txn.code?.receivingRole ?? ""),
         classification: txn.classification,

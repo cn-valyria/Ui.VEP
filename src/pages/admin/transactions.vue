@@ -104,7 +104,7 @@
               <tr v-for="(transaction, i) in aidBasedTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
-                    <button class="button is-info" @click="editTransaction(transaction)">Edit</button>
+                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.aidBased)">Edit</button>
                   </div>
                 </td>
                 <td>{{ transaction.sentBy.rulerName || "" }}</td>
@@ -151,8 +151,14 @@
               <tr v-for="(transaction, i) in manualTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
-                    <button class="button is-info">Edit</button>
-                    <button class="button is-danger">Delete</button>
+                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.manual)">Edit</button>
+                    <button
+                      class="button is-danger"
+                      :class="{ 'is-loading': transactionIdBeingDeleted === transaction.id }"
+                      @click="deleteTransactionById(transaction.id)"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </td>
                 <td>{{ transaction.nation.rulerName }}</td>
@@ -304,7 +310,8 @@ export default {
     limitOptions: [ 10, 25, 100, 500 ],
     aidBasedDialogIsVisible: false,
     manualDialogIsVisible: false,
-    transactionBeingEdited: undefined
+    transactionBeingEdited: undefined,
+    transactionIdBeingDeleted: 0
   }),
   computed: {
     ...mapState({
@@ -335,6 +342,7 @@ export default {
   methods: {
     ...mapActions({
       reloadCurrentTransactionsPage: "admin/transactions/reloadCurrentTransactionsPage",
+      deleteTransaction: "admin/transactions/deleteTransaction",
       loadAllAccounts: "admin/accounts/loadAllAccounts"
     }),
     async changePage(newPageNumber) {
@@ -368,9 +376,26 @@ export default {
       this.transactionBeingEdited = {};
       this.manualDialogIsVisible = true;
     },
-    editTransaction(txn) {
-      this.transactionBeingEdited = txn;
-      this.aidBasedDialogIsVisible = true;
+    editTransaction(transaction, transactionType) {
+      this.transactionBeingEdited = transaction;
+
+      if (transactionType === TRANSACTION_TYPES.aidBased) {
+        this.aidBasedDialogIsVisible = true;
+      } else if (transactionType === TRANSACTION_TYPES.manual) {
+        this.manualDialogIsVisible = true;
+      }
+    },
+    async deleteTransactionById(id) {
+      this.transactionIdBeingDeleted = id;
+
+      try {
+        await this.deleteTransaction(id);
+      } catch (e) {
+        this.$log.error(e);
+        this.$toast.error("VEP encountered an error while deleting the transaction. Please try again, or contact @lilweirdward if the error persists.");
+      }
+
+      this.transactionIdBeingDeleted = 0;
     },
     closeDialog(transactionType) {
       if (transactionType === TRANSACTION_TYPES.aidBased) {
