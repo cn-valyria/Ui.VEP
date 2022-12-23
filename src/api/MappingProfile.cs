@@ -21,7 +21,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.SentBy, opt => opt.MapFrom(src => MapToNationSimplified(src.SentByNationId, src.SentByNationName, src.SentByRulerName, src.SentByAllianceName)))
             .ForMember(dest => dest.ReceivedBy, opt => opt.MapFrom(src => MapToNationSimplified(src.ReceivedByNationId, src.ReceivedByNationName, src.ReceivedByRulerName, src.ReceivedByAllianceName)))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (AidStatus) src.Status))
-            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => MapToTransactionCode(src)));
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => MapToTransactionCode(src)))
+            .ForMember(dest => dest.EndsOn, opt => opt.MapFrom(src => src.StartsOn.HasValue ? src.StartsOn.Value.AddDays(10).Date : (DateTime?) null));
     }
 
     private NationSimplified MapToNationSimplified(int? nationId, string nationName, string rulerName, string allianceName)

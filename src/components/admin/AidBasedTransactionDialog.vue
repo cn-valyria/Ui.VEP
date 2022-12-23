@@ -55,17 +55,12 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="field">
-              <label class="label">Aid Status</label>
-              <div class="control is-expanded">
-                <div class="select is-fullwidth">
-                  <select>
-                    <option *ngFor="let status of (aidStatusNames | enumToArray)" [ngValue]="toAidStatusValue(status)">
-                      {{ status }}</option>
-                  </select>
-                </div>
+            <div class="field">
+              <label class="label">Status</label>
+              <div class="control">
+                <input v-model="transactionBeingEdited.status" class="input" type="text" />
               </div>
-            </div> -->
+            </div>
             <div class="field is-horizontal">
               <div class="field-body">
                 <div class="field">
@@ -104,69 +99,82 @@
                 </div>
               </div>
             </div>
+            <div class="field">
+              <label class="label">Reason</label>
+              <div class="control">
+                <input v-model="transactionBeingEdited.reason" class="input" type="text" />
+              </div>
+            </div>
           </fieldset>
-          <div class="field">
-            <label class="label">Reason</label>
-            <div class="control">
-              <input v-model="transactionBeingEdited.reason" class="input" type="text" />
-            </div>
-          </div>
           <h2>Transaction Metadata</h2>
-          <div class="field is-horizontal">
-            <div class="field-body">
-              <div class="field">
-                <label class="label">Classification</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.classification" class="input" type="text" />
+          <fieldset disabled>
+            <div class="field is-horizontal">
+              <div class="field-body">
+                <div class="field">
+                  <label class="label">Classification</label>
+                  <div class="control">
+                    <div class="select is-fullwidth">
+                      <select v-model="transactionBeingEdited.classification">
+                        <option
+                          v-for="classification of classifications"
+                          :key="classification.id"
+                          :value="classification.id"
+                        >
+                          {{ classification.description }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="field">
-                <label class="label">Rate</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.rate" class="input" type="text" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-body">
-              <div class="field">
-                <label class="label">Cash Moved (Cash)</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.cashMovedCashCredit" class="input" type="text" />
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Cash Moved (Tech)</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.cashMovedTechCredit" class="input" type="text" />
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Tech Moved (Cash)</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.techMovedCashCredit" class="input" type="text" />
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Tech Moved (Tech)</label>
-                <div class="control">
-                  <input v-model="transactionBeingEdited.techMovedTechCredit" class="input" type="text" />
+                <div class="field">
+                  <label class="label">Rate</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.rate" class="input" type="text" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+            <div class="field is-horizontal">
+              <div class="field-body">
+                <div class="field">
+                  <label class="label">Cash Moved <br />(Cash)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.cashMovedCashCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Cash Moved <br />(Tech)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.cashMovedTechCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Tech Moved <br />(Cash)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.techMovedCashCredit" class="input" type="text" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Tech Moved <br />(Tech)</label>
+                  <div class="control">
+                    <input v-model="transactionBeingEdited.techMovedTechCredit" class="input" type="text" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success">Save</button>
-        <button class="button">Cancel</button>
+        <button class="button" @click="$emit('close')">Close</button>
       </footer>
     </div>
   </div>
 </template>
 
 <script>
+import { transactionClassifications } from '~/infrastructure/dataLists';
+
 export default {
   props: {
     show: Boolean,
@@ -176,7 +184,8 @@ export default {
     }
   },
   data: () => ({
-    transactionBeingEdited: Object
+    transactionBeingEdited: Object,
+    classifications: transactionClassifications
   }),
   watch: {
     transaction(val) {

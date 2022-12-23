@@ -16,26 +16,6 @@
                 <input class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
               </div>
             </div>
-            <!-- <div class="dropdown">
-                    <div class="dropdown-trigger">
-                        <div class="field">
-                            <label class="label">Sent By</label>
-                            <div class="control">
-                                <input class="input" type="search" placeholder="Nation or Ruler name" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown-menu" role="menu">
-                        <div class="dropdown-content">
-                            <p class="is-size-6" style="padding: 0 12px">Nations</p>
-                            <span class="dropdown-item">lilweirdward of Land of Too Much Fun</span>
-                            <span class="dropdown-item">Lord Draculea of Transylvania</span>
-                            <hr class="dropdown-divider" />
-                            <p class="is-size-6" style="padding: 0 12px">Alliances</p>
-                            <span class="dropdown-item">Christian Coalition of Countries</span>
-                        </div>
-                    </div>
-                </div> -->
           </div>
           <div class="column">
             <div class="field">
@@ -104,7 +84,14 @@
               <tr v-for="(transaction, i) in aidBasedTransactions" :key="i">
                 <td>
                   <div class="buttons are-small">
-                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.aidBased)">Edit</button>
+                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.aidBased)">View</button>
+                    <button
+                      class="button is-danger"
+                      :class="{ 'is-loading': transactionIdBeingDeleted === transaction.id }"
+                      @click="deleteTransactionById(transaction.id)"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </td>
                 <td>{{ transaction.sentBy.rulerName || "" }}</td>
@@ -114,9 +101,9 @@
                 <td>{{ transaction.technology }}</td>
                 <td>{{ transaction.soldiers }}</td>
                 <td>{{ transaction.reason }}</td>
-                <td>{{ transaction.aidId || "" }}</td>
+                <td>{{ transaction.aidId }}</td>
                 <td>{{ transaction.startsOn }}</td>
-                <td>FIX THIS</td>
+                <td>{{ transaction.endsOn }}</td>
                 <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
                 <td>{{ transaction.classification }}</td>
                 <td>{{ transaction.rate }}</td>
@@ -396,6 +383,7 @@ export default {
       }
 
       this.transactionIdBeingDeleted = 0;
+      await this.changePage(this.currentPage);
     },
     closeDialog(transactionType) {
       if (transactionType === TRANSACTION_TYPES.aidBased) {
@@ -405,6 +393,7 @@ export default {
       }
       
       this.transactionBeingEdited = undefined;
+      this.changePage(this.currentPage);
     }
   }
 }

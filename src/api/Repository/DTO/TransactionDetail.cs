@@ -19,7 +19,7 @@ public class TransactionDetail
     public int Technology { get; set; }
     public int Soldiers { get; set; }
     public string Reason { get; set; }
-    public DateTime StartsOn { get; set; }
+    public DateTime? StartsOn { get; set; }
     public string Lu { get; set; }
     public int Classification { get; set; }
     public int Rate { get; set; }
