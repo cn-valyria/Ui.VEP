@@ -318,6 +318,7 @@
 <script>
 import { mapActions } from 'vuex';
 import { ERROR_MESSAGES } from '~/infrastructure/constants';
+import { accountRoles } from '~/infrastructure/dataLists';
 
 export default {
   props: {
@@ -330,20 +331,7 @@ export default {
   data: () => ({
     buttonIsLoading: false,
     accountBeingEdited: Object,
-    roles: [
-      { code: "B", description: "Buyer" },
-      { code: "S", description: "Seller" },
-      { code: "D", description: "Cash Donor" },
-      { code: "F", description: "Tech Farm" },
-      { code: "C", description: "Cash Collector" },
-      { code: "R", description: "Tech Receiver" },
-      { code: "N", description: "Probationary Seller" },
-      { code: "P", description: "Temporary Donor" },
-      { code: "V", description: "Temporary Collector" },
-      { code: "Q", description: "Temporary Farm" },
-      { code: "W", description: "Temporary Receiver" },
-      { code: "H", description: "On Hold" },
-    ],
+    roles: accountRoles,
     validationErrors: []
   }),
   computed: {

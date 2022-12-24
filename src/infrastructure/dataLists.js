@@ -7,3 +7,18 @@ export const transactionClassifications = [
   { id: 5, description: "Debt to B or P" },
   { id: 6, description: "Debt to S or N or V" }
 ];
+
+export const accountRoles = [
+  { code: "B", description: "Buyer" },
+  { code: "S", description: "Seller" },
+  { code: "D", description: "Cash Donor" },
+  { code: "F", description: "Tech Farm" },
+  { code: "C", description: "Cash Collector" },
+  { code: "R", description: "Tech Receiver" },
+  { code: "N", description: "Probationary Seller" },
+  { code: "P", description: "Temporary Donor" },
+  { code: "V", description: "Temporary Collector" },
+  { code: "Q", description: "Temporary Farm" },
+  { code: "W", description: "Temporary Receiver" },
+  { code: "H", description: "On Hold" },
+];
