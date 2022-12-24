@@ -57,111 +57,85 @@
           </ul>
         </div>
         <div v-if="currentTab === TRANSACTION_TYPES.aidBased" class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Actions</th>
-                <th>Sending Ruler</th>
-                <th>Receiving Ruler</th>
-                <th>Status</th>
-                <th>Money</th>
-                <th>Tech</th>
-                <th>Sold</th>
-                <th>Reason</th>
-                <th>Aid ID</th>
-                <th>Start</th>
-                <th>Ends</th>
-                <th>Lu</th>
-                <th>Cc</th>
-                <th>Rate</th>
-                <th>CT</th>
-                <th>CC</th>
-                <th>TC</th>
-                <th>TT</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(transaction, i) in aidBasedTransactions" :key="i">
-                <td>
-                  <div class="buttons are-small">
-                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.aidBased)">View</button>
-                    <button
-                      class="button is-danger"
-                      :class="{ 'is-loading': transactionIdBeingDeleted === transaction.id }"
-                      @click="deleteTransactionById(transaction.id)"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-                <td>{{ transaction.sentBy.rulerName || "" }}</td>
-                <td>{{ transaction.receivedBy.rulerName || "" }}</td>
-                <td>{{ toAidStatusDescription(transaction.status) }}</td>
-                <td>{{ transaction.money }}</td>
-                <td>{{ transaction.technology }}</td>
-                <td>{{ transaction.soldiers }}</td>
-                <td>{{ transaction.reason }}</td>
-                <td>{{ transaction.aidId }}</td>
-                <td>{{ transaction.startsOn }}</td>
-                <td>{{ transaction.endsOn }}</td>
-                <td>{{ (transaction.code && transaction.code.sendingRole + transaction.code.receivingRole) || "" }}</td>
-                <td>{{ transaction.classification }}</td>
-                <td>{{ transaction.rate }}</td>
-                <td>{{ transaction.cashMovedTechCredit }}</td>
-                <td>{{ transaction.cashMovedCashCredit }}</td>
-                <td>{{ transaction.techMovedCashCredit }}</td>
-                <td>{{ transaction.techMovedTechCredit }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <b-table :data="aidBasedTransactions" :loading="tableIsLoading">
+            <b-table-column field="id" label="Actions" width="140px" v-slot="props">
+              <div class="buttons are-small">
+                <button class="button is-info" @click="editTransaction(props.row, TRANSACTION_TYPES.aidBased)">View</button>
+                <button
+                  class="button is-danger"
+                  :class="{ 'is-loading': transactionIdBeingDeleted === props.row.id }"
+                  @click="deleteTransactionById(props.row.id)"
+                >
+                  Delete
+                </button>
+              </div>
+            </b-table-column>
+            <b-table-column field="sentBy" label="Sent By" v-slot="props">
+              {{ props.row.sentBy.rulerName }} of {{ props.row.sentBy.nationName }}
+            </b-table-column>
+            <b-table-column field="receivedBy" label="Received By" v-slot="props">
+              {{ props.row.receivedBy.rulerName }} of {{ props.row.receivedBy.nationName }}
+            </b-table-column>
+            <b-table-column field="code" label="Role Pairing" v-slot="props">
+              {{ props.row.code.sendingRole }}{{ props.row.code.receivingRole}}
+            </b-table-column>
+            <b-table-column field="status" label="Status" v-slot="props">
+              {{ toAidStatusDescription(props.row.status) }}
+            </b-table-column>
+            <b-table-column field="money" label="Money" v-slot="props">
+              {{ props.row.money }}
+            </b-table-column>
+            <b-table-column field="technology" label="Tech" v-slot="props">
+              {{ props.row.technology }}
+            </b-table-column>
+            <b-table-column field="reason" label="Reason" v-slot="props">
+              {{ props.row.reason }}
+            </b-table-column>
+            <b-table-column field="startsOn" label="Sent On" v-slot="props">
+              {{ props.row.startsOn.split('T')[0] }}
+            </b-table-column>
+            <template #empty>
+              <div class="has-text-centered">No transactions currently loaded</div>
+            </template>
+          </b-table>
         </div>
         <div v-if="currentTab === TRANSACTION_TYPES.manual" class="table-container">
           <button class="button is-success" @click="createTransaction()">Create</button>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Actions</th>
-                <th>Ruler Name</th>
-                <th>Nation Name</th>
-                <th>Adjustment Type</th>
-                <th>Reason</th>
-                <th>Lu</th>
-                <th>Cc</th>
-                <th>Rate</th>
-                <th>CT</th>
-                <th>CC</th>
-                <th>TC</th>
-                <th>TT</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(transaction, i) in manualTransactions" :key="i">
-                <td>
-                  <div class="buttons are-small">
-                    <button class="button is-info" @click="editTransaction(transaction, TRANSACTION_TYPES.manual)">Edit</button>
-                    <button
-                      class="button is-danger"
-                      :class="{ 'is-loading': transactionIdBeingDeleted === transaction.id }"
-                      @click="deleteTransactionById(transaction.id)"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-                <td>{{ transaction.nation.rulerName }}</td>
-                <td>{{ transaction.nation.nationName }}</td>
-                <td>{{ transaction.adjustmentType }}</td>
-                <td>{{ transaction.reason }}</td>
-                <td>{{ transaction.accountCode }}</td>
-                <td>{{ transaction.classification }}</td>
-                <td>{{ transaction.rate }}</td>
-                <td>{{ transaction.cashMovedTechCredit }}</td>
-                <td>{{ transaction.cashMovedCashCredit }}</td>
-                <td>{{ transaction.techMovedCashCredit }}</td>
-                <td>{{ transaction.techMovedTechCredit }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <b-table :data="manualTransactions" :loading="tableIsLoading">
+            <b-table-column field="id" label="Actions" width="140px" v-slot="props">
+              <div class="buttons are-small">
+                <button class="button is-info" @click="editTransaction(props.row, TRANSACTION_TYPES.manual)">Edit</button>
+                <button
+                  class="button is-danger"
+                  :class="{ 'is-loading': transactionIdBeingDeleted === props.row.id }"
+                  @click="deleteTransactionById(props.row.id)"
+                >
+                  Delete
+                </button>
+              </div>
+            </b-table-column>
+            <b-table-column field="nation" label="Account" v-slot="props">
+              {{ props.row.nation.rulerName }} of {{ props.row.nation.nationName }}
+            </b-table-column>
+            <b-table-column field="adjustmentType" label="Adjustment Type" v-slot="props">
+              {{ props.row.adjustmentType }}
+            </b-table-column>
+            <b-table-column field="reason" label="Reason" v-slot="props">
+              {{ props.row.reason }}
+            </b-table-column>
+            <b-table-column field="accountCode" label="Role" v-slot="props">
+              {{ props.row.accountCode }}
+            </b-table-column>
+            <b-table-column field="classification" label="Classification" v-slot="props">
+              {{ classifications.find(c => c.id === props.row.classification).description }}
+            </b-table-column>
+            <b-table-column field="rate" label="Rate" v-slot="props">
+              {{ props.row.rate }}
+            </b-table-column>
+            <template #empty>
+              <div class="has-text-centered">No transactions currently loaded</div>
+            </template>
+          </b-table>
         </div>
         <div class="columns">
           <div class="column is-four-fifths">
@@ -286,6 +260,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
 import { TRANSACTION_TYPES } from "~/infrastructure/constants";
+import { transactionClassifications } from '~/infrastructure/dataLists';
 
 export default {
   name: "TransactionsPage",
@@ -295,10 +270,12 @@ export default {
     currentPage: 1,
     limit: 25,
     limitOptions: [ 10, 25, 100, 500 ],
+    tableIsLoading: false,
     aidBasedDialogIsVisible: false,
     manualDialogIsVisible: false,
     transactionBeingEdited: undefined,
-    transactionIdBeingDeleted: 0
+    transactionIdBeingDeleted: 0,
+    classifications: transactionClassifications
   }),
   computed: {
     ...mapState({
@@ -333,13 +310,21 @@ export default {
       loadAllAccounts: "admin/accounts/loadAllAccounts"
     }),
     async changePage(newPageNumber) {
+      this.tableIsLoading = true;
       this.currentPage = newPageNumber;
-      await this.reloadCurrentTransactionsPage({
-        type: this.currentTab,
-        filter: {},
-        limit: this.limit,
-        offset: this.limit * (this.currentPage - 1)
-      });
+      try {
+        await this.reloadCurrentTransactionsPage({
+          type: this.currentTab,
+          filter: {},
+          limit: this.limit,
+          offset: this.limit * (this.currentPage - 1)
+        });
+      } catch (e) {
+        this.$log.error(e);
+        this.$toast.error("The current page failed to load");
+      }
+
+      this.tableIsLoading = false;
     },
     async changeTab(tabName) {
       if (this.currentTab === tabName) {
