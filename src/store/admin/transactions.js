@@ -1,9 +1,4 @@
-import {
-  RELOAD_TRANSACTIONS_PAGE,
-  UPDATE_TRANSACTION,
-  REMOVE_TRANSACTION,
-  CREATE_TRANSACTION
-} from "./mutation-types";
+import { RELOAD_TRANSACTIONS_PAGE } from "./mutation-types";
 import { ADJUSTMENT_TYPES } from "~/infrastructure/constants";
 
 export const state = () => ({
@@ -17,12 +12,6 @@ export const mutations = {
   [RELOAD_TRANSACTIONS_PAGE](state, { data, totalCount }) {
     state.currentTransactionsPage.data = data;
     state.currentTransactionsPage.totalCount = totalCount;
-  },
-  [UPDATE_TRANSACTION](state, payload) {
-    // TODO: things
-  },
-  [REMOVE_TRANSACTION](state, payload) {
-    // TODO: things
   }
 };
 

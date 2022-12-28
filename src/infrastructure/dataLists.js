@@ -22,3 +22,11 @@ export const accountRoles = [
   { code: "W", description: "Temporary Receiver" },
   { code: "H", description: "On Hold" },
 ];
+
+export const recentActivityValues = [
+  { id: 1, description: "Last 3 Days" },
+  { id: 2, description: "This Week" },
+  { id: 3, description: "Last Week" },
+  { id: 4, description: "Three Weeks Ago" },
+  { id: 5, description: "More Than 3 Weeks Ago" }
+];

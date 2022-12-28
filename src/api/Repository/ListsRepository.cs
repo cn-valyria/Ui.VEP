@@ -19,6 +19,7 @@ public class ListsRepository : IListsRepository
         
         const string getAidListsQuery = @"
 select  id as Id,
+        name as Name,
         subject as Subject,
         message as Message
 from list";
