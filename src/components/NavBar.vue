@@ -25,7 +25,7 @@
             <NuxtLink to="/admin" class="navbar-item">Home</NuxtLink>
             <NuxtLink to="/admin/accounts" class="navbar-item">Accounts</NuxtLink>
             <NuxtLink to="/admin/transactions" class="navbar-item">Transactions</NuxtLink>
-            <a class="navbar-item">Lists</a> 
+            <NuxtLink to="/admin/lists" class="navbar-item">Lists</NuxtLink>
           </div>
         </div>
 
