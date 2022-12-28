@@ -28,7 +28,8 @@ internal static class StartupExtensions
         return services
             .AddTransient<IAuthorizationRepository>(sp => new AuthorizationRepository(vepDbConnectionString))
             .AddTransient<IAccountsRepository>(sp => new AccountsRepository(vepDbConnectionString))
-            .AddTransient<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString));
+            .AddTransient<ITransactionsRepository>(sp => new TransactionsRepository(vepDbConnectionString))
+            .AddTransient<IListsRepository>(sp => new ListsRepository(vepDbConnectionString));
     }
 
     public static IServiceCollection AddInternalProviders(this IServiceCollection services) => services

@@ -23,6 +23,11 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (AidStatus) src.Status))
             .ForMember(dest => dest.Code, opt => opt.MapFrom(src => MapToTransactionCode(src)))
             .ForMember(dest => dest.EndsOn, opt => opt.MapFrom(src => src.StartsOn.HasValue ? src.StartsOn.Value.AddDays(10).Date : (DateTime?) null));
+
+        CreateMap<AidListDetail, AidList>();
+        CreateMap<ListRecipientDetail, ListRecipient>()
+            .ForMember(dest => dest.Nation, opt => opt.MapFrom(src => MapToNationSimplified(src.NationId, src.NationName, src.RulerName, src.AllianceName)))
+            .ForMember(dest => dest.RecentActivity, opt => opt.MapFrom(src => (RecentActivity) src.RecentActivity));
     }
 
     private NationSimplified MapToNationSimplified(int? nationId, string nationName, string rulerName, string allianceName)
