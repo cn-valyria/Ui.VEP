@@ -60,7 +60,7 @@ import dateFormat from "dateformat";
 import { recentActivityValues } from "~/infrastructure/dataLists";
 
 export default {
-  name: 'ListsPage',
+  name: 'AdminListsPage',
   data: () => ({
     isLoading: true,
     recentActivityValues

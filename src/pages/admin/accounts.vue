@@ -63,7 +63,7 @@ import { mapActions, mapState } from 'vuex';
 import { accountRoles } from '~/infrastructure/dataLists';
 
 export default {
-  name: 'AccountsPage',
+  name: 'AdminAccountsPage',
   data: () => ({
     editDialogIsVisible: false,
     accountBeingEdited: undefined,

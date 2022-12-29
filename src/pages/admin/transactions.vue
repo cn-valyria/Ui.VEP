@@ -263,7 +263,7 @@ import { TRANSACTION_TYPES } from "~/infrastructure/constants";
 import { transactionClassifications } from '~/infrastructure/dataLists';
 
 export default {
-  name: "TransactionsPage",
+  name: "AdminTransactionsPage",
   data: () => ({
     TRANSACTION_TYPES,
     currentTab: TRANSACTION_TYPES.aidBased,

@@ -31,7 +31,7 @@
 
         <a class="navbar-item">
           <div class="buttons">
-            <a class="button is-primary" @click="test()">My Account</a>
+            <NuxtLink to="/account/1" class="button is-primary">My Account</NuxtLink>
           </div>
         </a>
       </div>
