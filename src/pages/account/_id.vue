@@ -19,11 +19,7 @@
     </section>
     <div class="container">
       <div class="section">
-        <div class="content is-large has-text-centered">
-          <h3>Your Current Balance</h3>
-          <h1 class="has-text-success">${{ account.credit }}M Cash (Credit)</h1>
-          <p class="has-text-grey-lighter is-uppercase">Your nation is due ${{ account.credit }}M Cash from other VEP accounts.</p>
-        </div>
+        <AccountBalance :credit="account.credit" :debt="account.debt" :role="account.role"></AccountBalance>
       </div>
     </div>
     <div class="container">

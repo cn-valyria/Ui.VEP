@@ -1,3 +1,18 @@
+export const ACCOUNT_ROLE_CODES = {
+  buyer: "B",
+  seller: "S",
+  cashDonor: "D",
+  techFarm: "F",
+  cashCollector: "C",
+  techReceiver: "R",
+  probationarySeller: "N",
+  temporaryDonor: "P",
+  temporaryCollector: "V",
+  temporaryFarm: "Q",
+  temporaryReceiver: "W",
+  onHold: "H"
+};
+
 export const TRANSACTION_TYPES = {
   aidBased: "AidBased",
   manual: "Manual",
