@@ -6,10 +6,14 @@
           <span class="has-text-weight-bold">{{ account.rulerName }}</span> of {{ account.nationName }}
         </p>
         <p class="subtitle">
-          <b-taglist>
-            <b-tag type="is-dark">{{ account.role !== undefined ? roles.find(r => r.code === account.role).description : "" }}</b-tag>
-            <b-tag type="is-dark">{{ account.allianceName }}</b-tag>
-          </b-taglist>
+          <b-field grouped group-multiline>
+            <div class="control">
+              <ChipAccountRole :code="account.role"></ChipAccountRole>
+            </div>
+            <div class="control">
+              <ChipAllianceAcronym :allianceName="account.allianceName"></ChipAllianceAcronym>
+            </div>
+          </b-field>
         </p>
       </div>
     </section>
@@ -39,7 +43,7 @@
                   {{ props.row.nation.rulerName }} of {{ props.row.nation.nationName }}
                 </b-table-column>
                 <b-table-column field="nation.allianceName" label="Alliance" v-slot="props">
-                  {{ props.row.nation.allianceName }}
+                  {{ props.row.nation.allianceName }} <ChipAllianceAcronym :allianceName="props.row.nation.allianceName"></ChipAllianceAcronym>
                 </b-table-column>
                 <b-table-column field="slotsFree" label="Slots Free" v-slot="props">
                   {{ props.row.slotsFree }}
