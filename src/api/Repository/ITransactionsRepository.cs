@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Repository.DTO;
 
@@ -11,6 +13,8 @@ public interface ITransactionsRepository
         int limit,
         int offset
     );
+
+    Task<List<TransactionDetail>> GetTransactionsByAccount(int accountId);
 
     Task<int> CreateTransactionAsync(TransactionCreateRequest transaction);
 

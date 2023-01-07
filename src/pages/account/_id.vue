@@ -123,10 +123,8 @@ export default {
   },
   async created() {
     await this.loadAccount(this.accountId);
-
-    // TODO: Fix this to be dynamically driven by the account role
-    await this.loadAidList(1);
-    await this.loadTransactionHistory({ rulerName: this.account.rulerName })
+    await this.loadAidList(this.accountId);
+    await this.loadTransactionHistory(this.accountId);
   },
   methods: {
     ...mapActions({

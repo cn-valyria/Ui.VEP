@@ -8,6 +8,8 @@ public interface IAccountsRepository
 {
     Task<IEnumerable<AccountDetail>> GetAccountDetailsAsync();
 
+    Task<AccountDetail> GetAccountByIdAsync(int accountId);
+
     Task<AccountDetail> CreateAccountAsync(AccountCreateRequest request);
 
     Task UpdateAccountAsync(AccountUpdateRequest account);

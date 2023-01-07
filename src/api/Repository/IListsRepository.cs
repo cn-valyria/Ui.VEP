@@ -7,4 +7,6 @@ namespace Repository;
 public interface IListsRepository
 {
     Task<List<AidListDetail>> GetAidListsAsync();
+
+    Task<List<ListRecipientDetail>> GetListRecipientsForAccountAsync(int accountId);
 }

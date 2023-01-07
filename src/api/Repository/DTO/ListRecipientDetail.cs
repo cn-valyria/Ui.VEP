@@ -3,6 +3,7 @@ namespace Repository.DTO;
 public class ListRecipientDetail
 {
     public int ListId { get; set; }
+    public int AccountId { get; set; }
     public int NationId { get; set; }
     public string RulerName { get; set; }
     public string NationName { get; set; }

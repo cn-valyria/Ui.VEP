@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using MySql.Data.MySqlClient;
@@ -24,6 +27,7 @@ public class TransactionsRepository : ITransactionsRepository
         await sqlConnection.ExecuteAsync("search_transactions", new 
         {
             _type = transactionType,
+            _account_id = (int?) null,
             _sent_by = filters.SentBy,
             _received_by = filters.ReceivedBy,
             _sent_since = filters.SentSince,
@@ -40,6 +44,23 @@ public class TransactionsRepository : ITransactionsRepository
             TotalCount = totalCount,
             Results = results
         };
+    }
+
+    public async Task<List<TransactionDetail>> GetTransactionsByAccount(int accountId)
+    {
+        using var sqlConnection = new MySqlConnection(_connectionString);
+
+        await sqlConnection.ExecuteAsync("search_transactions", new
+        {
+            _type = (int?) null,
+            _account_id = accountId,
+            _sent_by = (string) null,
+            _received_by = (string) null,
+            _sent_since = (DateTime?) null,
+            _sent_until = (DateTime?) null
+        }, commandType: CommandType.StoredProcedure);
+
+        return (await sqlConnection.QueryAsync<TransactionDetail>("select * from tmpTxnSearchResults")).ToList();
     }
 
     public async Task<int> CreateTransactionAsync(TransactionCreateRequest transaction)

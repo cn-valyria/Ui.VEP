@@ -19,39 +19,20 @@ export const mutations = {
 };
 
 export const actions = {
-  // TODO: Refactor because this is a shitty way to load the account
   async loadAccount(context, accountId) {
-    const response = await this.$axios.get("accounts");
+    const response = await this.$axios.get(`accounts/${accountId}`);
     this.$log.debug(response);
-
-    const account = response.data.find(a => a.id === accountId);
-    if (account) {
-      context.commit(LOAD_ACCOUNT, account);
-    } else {
-      throw new Error(`No account could be found for ID ${accountId}`);
-    }
+    context.commit(LOAD_ACCOUNT, response.data);
   },
-  async loadAidList(context, listId) {
-    const response = await this.$axios.get("lists");
+  async loadAidList(context, accountId) {
+    const response = await this.$axios.get(`accounts/${accountId}/aidList`);
     this.$log.debug(response);
-
-    const aidList = response.data.find(l => l.id === listId);
-    if (aidList) {
-      context.commit(LOAD_LIST, aidList.recipients);
-    } else {
-      throw new Error(`No aid list could be found for ID ${listId}`);
-    }
+    context.commit(LOAD_LIST, response.data);
   },
-  // TODO: Refactor because this is an even shittier way to load transaction history
-  async loadTransactionHistory(context, { rulerName }) {
-    const params = new URLSearchParams();
-    params.append("sentBy", rulerName);
-    params.append("receivedBy", rulerName);
-    params.append("limit", 500);
-
-    const response = await this.$axios.get(`transactions/all?${params.toString()}`);
+  async loadTransactionHistory(context, accountId) {
+    const response = await this.$axios.get(`accounts/${accountId}/transactions`);
     this.$log.debug(response);
-    context.commit(LOAD_TRANSACTIONS, response.data.results);
+    context.commit(LOAD_TRANSACTIONS, response.data);
   }
 };
 

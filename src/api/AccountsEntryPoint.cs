@@ -13,16 +13,32 @@ using Repository.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using api.Auth;
+using AutoMapper;
+using Models;
 
 namespace api;
 
 public class AccountsEntryPoint
 {
     private readonly IAccountsRepository _accountsRepository;
+    private readonly ITransactionsRepository _transactionsRepository;
+    private readonly IListsRepository _listsRepository;
     private readonly ITokenProvider _tokenProvider;
+    private readonly IMapper _mapper;
 
-    public AccountsEntryPoint(IAccountsRepository accountsRepository, ITokenProvider tokenProvider)
-        => (_accountsRepository, _tokenProvider) = (accountsRepository, tokenProvider);
+    public AccountsEntryPoint(
+        IAccountsRepository accountsRepository, 
+        ITransactionsRepository transactionsRepository,
+        IListsRepository listsRepository,
+        ITokenProvider tokenProvider,
+        IMapper mapper)
+    {
+        _accountsRepository = accountsRepository;
+        _transactionsRepository = transactionsRepository;
+        _listsRepository = listsRepository;
+        _tokenProvider = tokenProvider;
+        _mapper = mapper;
+    }
 
     [FunctionName(nameof(GetAllAccounts))]
     public async Task<IActionResult> GetAllAccounts(
@@ -45,6 +61,87 @@ public class AccountsEntryPoint
         catch (Exception e)
         {
             var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(GetAllAccounts)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(GetAccount))]
+    public async Task<IActionResult> GetAccount(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "accounts/{id}")] HttpRequest request,
+        int? id,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(GetAccount)} method...");
+
+        if (id is null)
+            return new BadRequestObjectResult("Must provide an ID to delete in the request");
+
+        try 
+        {
+            var result = await _accountsRepository.GetAccountByIdAsync(id.Value);
+
+            log.LogInformation("{methodName} execution complete. Returned {@result}.", nameof(GetAccount), result);
+
+            return new OkObjectResult(result);
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(GetAccount)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(GetAccountTransactions))]
+    public async Task<IActionResult> GetAccountTransactions(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "accounts/{id}/transactions")] HttpRequest request,
+        int? id,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(GetAccountTransactions)} method...");
+
+        if (id is null)
+            return new BadRequestObjectResult("Must provide an ID to delete in the request");
+
+        try 
+        {
+            var results = await _transactionsRepository.GetTransactionsByAccount(id.Value);
+
+            log.LogInformation($"{nameof(GetAccountTransactions)} execution complete. Found {results.Count} results.");
+
+            return new OkObjectResult(results.Select(_mapper.Map<Transaction>));
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(GetAccountTransactions)}", e);
+            log.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(GetAccountAidList))]
+    public async Task<IActionResult> GetAccountAidList(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "accounts/{id}/aidList")] HttpRequest request,
+        int? id,
+        ILogger log)
+    {
+        log.LogInformation($"Beginning execution for {nameof(GetAccountAidList)} method...");
+
+        if (id is null)
+            return new BadRequestObjectResult("Must provide an ID to delete in the request");
+
+        try 
+        {
+            var results = await _listsRepository.GetListRecipientsForAccountAsync(id.Value);
+
+            log.LogInformation($"{nameof(GetAccountAidList)} execution complete. Found {results.Count} results.");
+
+            return new OkObjectResult(results.Select(_mapper.Map<ListRecipient>));
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(GetAccountAidList)}", e);
             log.LogError(e, wrapperException.Message);
             return new ExceptionResult(wrapperException, true);
         }

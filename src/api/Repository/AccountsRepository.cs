@@ -82,6 +82,14 @@ group by receiving_nation_id
         return await sqlConnection.QueryAsync<AccountDetail>(AccountDetailQuery);
     }
 
+    public async Task<AccountDetail> GetAccountByIdAsync(int accountId)
+    {
+        using var sqlConnection = new MySqlConnection(_connectionString);
+        return await sqlConnection.QueryFirstAsync<AccountDetail>(
+            AccountDetailQuery + "\nwhere account.id = @account_id",
+            new { account_id = accountId });
+    }
+
     public async Task<AccountDetail> CreateAccountAsync(AccountCreateRequest request)
     {
         using var sqlConnection = new MySqlConnection(_connectionString);
