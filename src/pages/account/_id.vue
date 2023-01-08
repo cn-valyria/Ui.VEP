@@ -24,33 +24,7 @@
     </div>
     <div class="container">
       <div class="section">
-        <b-collapse class="card" animation="slide">
-          <template #trigger>
-            <div class="card-header">
-              <p class="card-header-title">Acceptable Senders</p>
-            </div>
-          </template>
-          <div class="card-content">
-            <div class="content">
-              <p>Please use this tool to verify VEP enrollment of incoming aid senders that you don't recognize before accepting it.</p>
-              <p>IMPORTANT: Do not use this list to send aid. It should only be used to verify that nations sending you aid are doing so legitimately.</p>
-              <b-table :data="aidList">
-                <b-table-column field="nation" label="Nation" v-slot="props">
-                  {{ props.row.nation.rulerName }} of {{ props.row.nation.nationName }}
-                </b-table-column>
-                <b-table-column field="nation.allianceName" label="Alliance" v-slot="props">
-                  {{ props.row.nation.allianceName }} <ChipAllianceAcronym :allianceName="props.row.nation.allianceName"></ChipAllianceAcronym>
-                </b-table-column>
-                <b-table-column field="slotsFree" label="Slots Free" v-slot="props">
-                  {{ props.row.slotsFree }}
-                </b-table-column>
-                <b-table-column field="discord" label="Discord Tag" v-slot="props">
-                  {{ props.row.discord }}
-                </b-table-column>
-              </b-table>
-            </div>
-          </div>
-        </b-collapse>
+        <AccountAidList :account="account" :aidList="aidList"></AccountAidList>
       </div>
     </div>
     <div class="container">
