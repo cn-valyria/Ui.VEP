@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div style="position: relative">
+    <b-loading v-model="loading" :is-full-page="false" :can-cancel="false"></b-loading>
     <section class="hero is-light is-medium">
       <div class="hero-body">
         <p class="title">
@@ -35,6 +36,12 @@
   </div>
 </template>
 
+<style>
+.loading-overlay .loading-background {
+  background: hsla(0, 0%, 100%, 1) !important;
+}
+</style>
+
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { accountRoles } from '~/infrastructure/dataLists';
@@ -42,6 +49,7 @@ import { accountRoles } from '~/infrastructure/dataLists';
 export default {
   name: "AccountPage",
   data: () => ({
+    loading: false,
     roles: accountRoles
   }),
   computed: {
@@ -58,9 +66,13 @@ export default {
     }
   },
   async created() {
+    this.loading = true;
+
     await this.loadAccount(this.accountId);
     await this.loadAidList(this.accountId);
     await this.loadTransactionHistory(this.accountId);
+
+    this.loading = false;
   },
   methods: {
     ...mapActions({
