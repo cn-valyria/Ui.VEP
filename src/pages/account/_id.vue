@@ -29,45 +29,7 @@
     </div>
     <div class="container">
       <div class="section">
-        <b-collapse class="card" animation="slide">
-          <template #trigger>
-            <div class="card-header">
-              <p class="card-header-title">Credit History</p>
-            </div>
-          </template>
-          <div class="card-content">
-            <div class="content">
-              <p>
-                Your entire history of credit changes, as recorded in the VEP. This history includes both aid-based transactions, as well as manually-
-                configured credits or debts that may have been added to your account by an admin. Please contact VEP Management if you have any 
-                concerns about your credit history.
-              </p>
-              <b-table :data="creditHistory">
-                <b-table-column field="otherNation" column="Other Nation" v-slot="props">
-                  {{ props.row.otherNation !== null ? `${props.row.otherNation.rulerName} of ${props.row.otherNation.nationName}` : "VEP Management" }}
-                </b-table-column>
-                <b-table-column field="type" label="Type" v-slot="props">
-                  {{ props.row.type }}
-                </b-table-column>
-                <b-table-column field="status" label="Status" v-slot="props">
-                  {{ toAidStatusDescription(props.row.status) }}
-                </b-table-column>
-                <b-table-column field="money" label="Money" v-slot="props">
-                  {{ props.row.money !== null ? props.row.money : "N/A" }}
-                </b-table-column>
-                <b-table-column field="technology" label="Tech" v-slot="props">
-                  {{ props.row.technology !== null ? props.row.technology : "N/A" }}
-                </b-table-column>
-                <b-table-column field="balanceChangeType" label="Credit Change" v-slot="props">
-                  FINISH THIS
-                </b-table-column>
-                <b-table-column field="sentOn" label="Sent On" v-slot="props">
-                  {{ props.row.sentOn !== null ? props.row.sentOn.split('T')[0] : "N/A" }}
-                </b-table-column>
-              </b-table>
-            </div>
-          </div>
-        </b-collapse>
+        <AccountCreditHistory :accountRole="account.role" :creditHistory="creditHistory"></AccountCreditHistory>
       </div>
     </div>
   </div>
@@ -105,16 +67,7 @@ export default {
       loadAccount: "account/loadAccount",
       loadAidList: "account/loadAidList",
       loadTransactionHistory: "account/loadTransactionHistory"
-    }),
-    toAidStatusDescription(statusId) {
-      switch (statusId) {
-        case 1: return "Pending";
-        case 2: return "Approved";
-        case 3: return "Cancelled";
-        case 4: return "Expired";
-        default: return "Unknown";
-      }
-    }
+    })
   }
 }
 </script>
