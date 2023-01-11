@@ -23,14 +23,12 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '@/assets/css/main.scss',
-    'bulma-calendar/dist/css/bulma-calendar.min.css'
+    'bulma-calendar/dist/css/bulma-calendar.min.css',
+    'bulma-divider/dist/css/bulma-divider.min.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    '@/plugins/axios-port',
-    '@/plugins/axios'
-  ],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -45,6 +43,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
     '@nuxtjs/toast',
     'nuxt-logger',
     'nuxt-buefy'
@@ -54,6 +53,21 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: '/api/',
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'user/authenticate', method: 'post', propertyName: 'data' },
+          user: { url: 'user/account', method: 'get', propertyName: 'data' },
+          logout: false
+        },
+        user: {
+          property: false
+        }
+      }
+    }
   },
 
   // Toast module configuration

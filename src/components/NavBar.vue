@@ -19,33 +19,58 @@
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless">Admin Portal</a>
-          <div class="navbar-dropdown">
-            <NuxtLink to="/admin" class="navbar-item">Home</NuxtLink>
-            <NuxtLink to="/admin/accounts" class="navbar-item">Accounts</NuxtLink>
-            <NuxtLink to="/admin/transactions" class="navbar-item">Transactions</NuxtLink>
-            <NuxtLink to="/admin/lists" class="navbar-item">Lists</NuxtLink>
+        <div v-if="isAuthenticated" class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">Account</a>
+          <div class="navbar-dropdown is-right">
+            <NuxtLink :to="accountUrl" class="navbar-item">My Account</NuxtLink>
+            <div v-if="accountIsAdmin">
+              <hr class="navbar-divider" />
+              <div class="navbar-item is-uppercase is-size-7">Admin Portal</div>
+              <NuxtLink to="/admin" class="navbar-item">Home</NuxtLink>
+              <NuxtLink to="/admin/accounts" class="navbar-item">Accounts</NuxtLink>
+              <NuxtLink to="/admin/transactions" class="navbar-item">Transactions</NuxtLink>
+              <NuxtLink to="/admin/lists" class="navbar-item">Lists</NuxtLink>
+            </div>
+            <hr class="navbar-divider" />
+            <a class="navbar-item" @click="logout()">Log Out</a>
           </div>
         </div>
 
-        <a class="navbar-item">
+        <a v-else class="navbar-item">
           <div class="buttons">
             <b-button type="is-primary" label="Log In" @click="loginFormIsVisible = true" />
-            <!-- <NuxtLink to="/account/1" class="button is-primary">My Account</NuxtLink> -->
           </div>
         </a>
       </div>
     </div>
     
-    <Login :show="loginFormIsVisible" />
+    <Login :show="loginFormIsVisible" @close="loginFormIsVisible = false" />
   </nav>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   data: () => ({
     loginFormIsVisible: false
-  })
+  }),
+  computed: {
+    ...mapGetters({
+      isAuthenticated: "isAuthenticated",
+      loggedInUser: "loggedInUser"
+    }),
+    accountUrl() {
+      return `/account/${this.loggedInUser.accountId}`;
+    },
+    accountIsAdmin() {
+      return this.loggedInUser.roles.some(role => role.name === "Admin");
+    }
+  },
+  methods: {
+    async logout() {
+      await this.$auth.logout();
+    }
+  }
 }
 </script>
