@@ -58,7 +58,8 @@ export default {
       aidList: state => state.account.aidList
     }),
     ...mapGetters({
-      creditHistory: "account/creditHistory"
+      creditHistory: "account/creditHistory",
+      loggedInUser: "loggedInUser"
     }),
     accountId() {
       const parsedId = parseInt(this.$route.params.id);
@@ -67,6 +68,12 @@ export default {
   },
   async created() {
     this.loading = true;
+
+    if (this.loggedInUser.accountId !== this.accountId) {
+      this.$toast.error("You're not logged into the account that you tried to access.");
+      this.$router.push("/");
+      return;
+    }
 
     await this.loadAccount(this.accountId);
     await this.loadAidList(this.accountId);

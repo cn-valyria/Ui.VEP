@@ -284,7 +284,8 @@ export default {
     }),
     ...mapGetters({
       aidBasedTransactions: "admin/transactions/aidBasedTransactions",
-      manualTransactions: "admin/transactions/manualTransactions"
+      manualTransactions: "admin/transactions/manualTransactions",
+      loggedInUser: "loggedInUser"
     }),
     totalPages() {
       return Math.ceil(this.currentTransactionsPage.totalCount / 100);
@@ -297,6 +298,12 @@ export default {
     }
   },
   async created() {
+    if (!this.loggedInUser.roles.some(role => role.name === "Admin")) {
+      this.$log.warn("Tried to access an admin page without the admin role.");
+      this.$router.push("/");
+      return;
+    }
+
     await this.changePage(1);
     this.$log.info(this.currentTransactionsPage);
 

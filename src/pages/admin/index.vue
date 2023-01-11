@@ -8,7 +8,20 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  name: 'AdminIndex'
+  name: 'AdminIndex',
+  computed: {
+    ...mapGetters({
+      loggedInUser: "loggedInUser"
+    })
+  },
+  created() {
+    if (!this.loggedInUser.roles.some(role => role.name === "Admin")) {
+      this.$log.warn("Tried to access an admin page without the admin role.");
+      this.$router.push("/");
+    }
+  }
 }
 </script>

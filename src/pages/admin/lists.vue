@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import dateFormat from "dateformat";
 import { recentActivityValues } from "~/infrastructure/dataLists";
 
@@ -69,11 +69,20 @@ export default {
     ...mapState({
       lists: state => state.admin.lists.lists
     }),
+    ...mapGetters({
+      loggedInUser: "loggedInUser"
+    }),
     todayFormatted() {
       return dateFormat(new Date(), "mmm dd");
     }
   },
   async created() {
+    if (!this.loggedInUser.roles.some(role => role.name === "Admin")) {
+      this.$log.warn("Tried to access an admin page without the admin role.");
+      this.$router.push("/");
+      return;
+    }
+
     await this.loadAllLists();
     this.$log.debug(this.lists);
     this.isLoading = false;

@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { accountRoles } from '~/infrastructure/dataLists';
 
 export default {
@@ -73,9 +73,18 @@ export default {
   computed: {
     ...mapState({
       accounts: state => state.admin.accounts.accounts
+    }),
+    ...mapGetters({
+      loggedInUser: "loggedInUser"
     })
   },
   created() {
+    if (!this.loggedInUser.roles.some(role => role.name === "Admin")) {
+      this.$log.warn("Tried to access an admin page without the admin role.");
+      this.$router.push("/");
+      return;
+    }
+
     this.loadAllAccounts();
     this.$log.info(this.accounts);
   },
