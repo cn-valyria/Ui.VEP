@@ -5,6 +5,6 @@ namespace Repository;
 
 public interface IAuthorizationRepository
 {
-    Task<AuthorizedUser> Authorize(int nationId, string uniqueCode);
-    Task<AuthorizedUser> Authorize(string rulerName, string uniqueCode);
+    Task<AuthorizedAccount> Authorize(int nationId, string uniqueCode);
+    Task<AuthorizedAccount> Authorize(string rulerName, string uniqueCode);
 }

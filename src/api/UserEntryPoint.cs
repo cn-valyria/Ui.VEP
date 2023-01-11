@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using api.Auth;
 using api.Contracts;
+using api.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -53,6 +54,33 @@ public class UserEntryPoint
         catch (Exception e)
         {
             var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(Authenticate)}", e);
+            logger.LogError(e, wrapperException.Message);
+            return new ExceptionResult(wrapperException, true);
+        }
+    }
+
+    [FunctionName(nameof(GetAuthorizedAccount)), FunctionAuthorize]
+    public async Task<IActionResult> GetAuthorizedAccount(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/account")] HttpRequest request,
+        ILogger logger)
+    {
+        logger.LogInformation($"Beginning execution for {nameof(GetAuthorizedAccount)} method...");
+
+        try 
+        {
+            var originalAuthRequest = _tokenProvider.ReadToken(request.GetJwtBearerToken());
+            if (originalAuthRequest is null)
+                return new UnauthorizedResult();
+
+            var authorizedAccount = await _authenticationProvider.GetAuthorizedAccount(originalAuthRequest);
+
+            logger.LogInformation($"Account (Id: {authorizedAccount.AccountId}, Roles: {string.Join(',', authorizedAccount.Roles)}) was fetched");
+
+            return new OkObjectResult(authorizedAccount);
+        }
+        catch (Exception e)
+        {
+            var wrapperException = new Exception($"Unexpected error occurred while executing {nameof(GetAuthorizedAccount)}", e);
             logger.LogError(e, wrapperException.Message);
             return new ExceptionResult(wrapperException, true);
         }

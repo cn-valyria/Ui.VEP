@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using api.Contracts;
@@ -25,8 +26,9 @@ public class TokenProvider : ITokenProvider
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim("id", account.NationId.ToString()),
-                new Claim("code", account.UniqueCode)
+                new Claim(TokenClaims.NationId, account.NationId ?? string.Empty),
+                new Claim(TokenClaims.RulerName, account.RulerName ?? string.Empty),
+                new Claim(TokenClaims.UniqueCode, account.UniqueCode)
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -34,6 +36,24 @@ public class TokenProvider : ITokenProvider
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public AuthorizeUserRequest ReadToken(string token)
+    {
+        if (token is null)
+            return null;
+
+        if (!ValidateToken(token))
+            return null;
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwt = tokenHandler.ReadJwtToken(token);
+        return new AuthorizeUserRequest
+        {
+            NationId = jwt.Claims.First(c => c.Type == TokenClaims.NationId).Value,
+            RulerName = jwt.Claims.First(c => c.Type == TokenClaims.RulerName).Value,
+            UniqueCode = jwt.Claims.First(c => c.Type == TokenClaims.UniqueCode).Value
+        };
     }
 
     public bool ValidateToken(string token)
@@ -69,5 +89,13 @@ public class TokenProvider : ITokenProvider
 public interface ITokenProvider
 {
     string GenerateToken(AuthorizeUserRequest account);
+    AuthorizeUserRequest ReadToken(string token);
     bool ValidateToken(string token);
+}
+
+public static class TokenClaims
+{
+    public const string NationId = "nid";
+    public const string RulerName = "rul";
+    public const string UniqueCode = "uqc";
 }

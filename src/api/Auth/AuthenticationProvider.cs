@@ -14,24 +14,42 @@ public class AuthenticationProvider : IAuthenticationProvider
         _authorizationRepository = authorizationRepository;
     }
 
-    public async Task<bool> IsAuthenticated(AuthorizeUserRequest account)
+    public async Task<bool> IsAuthenticated(AuthorizeUserRequest request)
     {
-        if (string.IsNullOrEmpty(account.UniqueCode))
-            return false;
-        if (string.IsNullOrEmpty(account.NationId) && string.IsNullOrEmpty(account.RulerName))
+        if (!RequestIsValid(request))
             return false;
 
-        AuthorizedUser authorizedUser = null;
-        if (!string.IsNullOrEmpty(account.NationId) && int.TryParse(account.NationId, out var nationId))
-            authorizedUser = await _authorizationRepository.Authorize(nationId, account.UniqueCode);
-        else
-            authorizedUser = await _authorizationRepository.Authorize(account.RulerName, account.UniqueCode);
-
+        var authorizedUser = await GetAuthorizedAccount(request);
         return authorizedUser != null;
-    }        
+    }
+
+    public async Task<AuthorizedAccount> GetAuthorizedAccount(AuthorizeUserRequest request)
+    {
+        AuthorizedAccount authorizedUser = null;
+        if (!RequestIsValid(request))
+            return authorizedUser;
+
+        if (!string.IsNullOrEmpty(request.NationId) && int.TryParse(request.NationId, out var nationId))
+            authorizedUser = await _authorizationRepository.Authorize(nationId, request.UniqueCode);
+        else
+            authorizedUser = await _authorizationRepository.Authorize(request.RulerName, request.UniqueCode);
+
+        return authorizedUser;
+    }
+
+    private bool RequestIsValid(AuthorizeUserRequest request)
+    {
+        if (string.IsNullOrEmpty(request.UniqueCode))
+            return false;
+        if (string.IsNullOrEmpty(request.NationId) && string.IsNullOrEmpty(request.RulerName))
+            return false;
+
+        return true;
+    }
 }
 
 public interface IAuthenticationProvider
 {
     Task<bool> IsAuthenticated(AuthorizeUserRequest account);
+    Task<AuthorizedAccount> GetAuthorizedAccount(AuthorizeUserRequest request);
 }
