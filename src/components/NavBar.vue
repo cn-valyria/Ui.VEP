@@ -31,20 +31,21 @@
 
         <a class="navbar-item">
           <div class="buttons">
-            <NuxtLink to="/account/1" class="button is-primary">My Account</NuxtLink>
+            <b-button type="is-primary" label="Log In" @click="loginFormIsVisible = true" />
+            <!-- <NuxtLink to="/account/1" class="button is-primary">My Account</NuxtLink> -->
           </div>
         </a>
       </div>
     </div>
+    
+    <Login :show="loginFormIsVisible" />
   </nav>
 </template>
 
 <script>
 export default {
-  methods: {
-    test() {
-      this.$auth.login({});
-    }
-  }
+  data: () => ({
+    loginFormIsVisible: false
+  })
 }
 </script>
