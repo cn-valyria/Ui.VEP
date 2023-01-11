@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { authenticate } from '~/infrastructure/authentication';
+
 export default {
   props: {
     show: Boolean
@@ -54,16 +56,18 @@ export default {
     uniqueCodeIsMissing: false
   }),
   methods: {
-    login() {
+    async login() {
       if (!this.formIsValid()) {
         return;
       }
+
+      await authenticate(this.nationId, this.rulerName, this.uniqueCode);
     },
     formIsValid() {
       this.nationIdOrRulerNameIsMissing = (this.nationId.length === 0 && this.rulerName.length === 0);
       this.uniqueCodeIsMissing = this.uniqueCode.length === 0;
 
-      return this.nationIdOrRulerNameIsMissing || this.uniqueCodeIsMissing
+      return !(this.nationIdOrRulerNameIsMissing || this.uniqueCodeIsMissing);
     }
   }
 }
