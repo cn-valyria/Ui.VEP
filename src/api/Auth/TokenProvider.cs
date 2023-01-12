@@ -5,17 +5,21 @@ using System.Security.Claims;
 using System.Text;
 using api.Contracts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace api.Auth;
 
 public class TokenProvider : ITokenProvider
 {
     private readonly string _jwtSecret;
+    private readonly ILogger<TokenProvider> _logger;
 
-    public TokenProvider(IConfiguration configuration)
+    public TokenProvider(IConfiguration configuration, ILogger<TokenProvider> logger)
     {
         _jwtSecret = configuration["JwtSecret"];
+        _logger = logger;
     }
 
     public string GenerateToken(AuthorizeUserRequest account)
@@ -58,6 +62,8 @@ public class TokenProvider : ITokenProvider
 
     public bool ValidateToken(string token)
     {
+        _logger.LogDebug($"Validate token: {token}, against secret: {_jwtSecret}");
+
         if (token is null)
             return false;
         
@@ -75,12 +81,15 @@ public class TokenProvider : ITokenProvider
                 ClockSkew = TimeSpan.Zero
             }, out var validatedToken);
 
+            _logger.LogDebug($"Validated token: {JsonConvert.SerializeObject(validatedToken)}");
+
             // This technically should only make it this far if ValidateToken worked, but it's a nice 
             // way to sanity check the boolean result
             return validatedToken.ValidTo > DateTime.UtcNow;
         }
-        catch
+        catch (Exception e)
         {
+            _logger.LogError(e, "Error occurred while executing tokenHandler.ValidateToken");
             return false;
         }
     }
