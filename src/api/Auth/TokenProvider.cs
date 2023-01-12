@@ -14,9 +14,9 @@ namespace api.Auth;
 public class TokenProvider : ITokenProvider
 {
     private readonly string _jwtSecret;
-    private readonly ILogger<TokenProvider> _logger;
+    private readonly ILogger _logger;
 
-    public TokenProvider(IConfiguration configuration, ILogger<TokenProvider> logger)
+    public TokenProvider(IConfiguration configuration, ILogger logger)
     {
         _jwtSecret = configuration["JwtSecret"];
         _logger = logger;

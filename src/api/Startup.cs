@@ -13,6 +13,7 @@ public class Startup : FunctionsStartup
     public override void Configure(IFunctionsHostBuilder builder)
     {
         builder.Services
+            .AddLogging()
             .AddVepDbRepositories(builder.GetContext().Configuration)
             .AddInternalProviders()
             .AddAutoMapper(typeof(Startup));
