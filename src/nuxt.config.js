@@ -18,6 +18,9 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [
+      { src: "https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js", body: true }
+    ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -26,6 +29,12 @@ export default {
     'bulma-calendar/dist/css/bulma-calendar.min.css',
     'bulma-divider/dist/css/bulma-divider.min.css'
   ],
+
+  vue: {
+    config: {
+      ignoredElements: [/^ion-/]
+    }
+  },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ['@/plugins/axios.js'],
