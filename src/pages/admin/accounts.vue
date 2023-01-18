@@ -9,7 +9,7 @@
     <div class="container">
       <div class="section table-container">
         <button class="button is-success" @click="createAccount()">Create</button>
-        <b-table :data="accounts">
+        <b-table :data="accounts" default-sort="nationId">
           <b-table-column field="id" label="Actions" v-slot="props">
             <div class="buttons are-small">
               <button class="button is-info" @click="editAccount(props.row)">Edit</button>
@@ -22,29 +22,41 @@
               </button>
             </div>
           </b-table-column>
-          <b-table-column field="nationId" label="Nation" v-slot="props">
-            {{ props.row.rulerName }} of {{ props.row.nationName }}
+          <b-table-column field="nationId" label="Nation" sortable searchable :custom-search="filterByNation">
+            <template v-slot="props">
+              {{ props.row.rulerName }} of {{ props.row.nationName }}
+            </template>
+            <template #searchable="props">
+              <b-input v-model="props.filters.nationId" placeholder="Filter..." size="is-small" />
+            </template>
           </b-table-column>
-          <b-table-column field="allianceName" label="Alliance" v-slot="props">
-            {{ props.row.allianceName }}
+          <b-table-column field="allianceName" label="Alliance" sortable searchable>
+            <template v-slot="props">
+              {{ props.row.allianceName }}
+            </template>
+            <template #searchable="props">
+              <b-input v-model="props.filters.allianceName" placeholder="Filter..." size="is-small" />
+            </template>
           </b-table-column>
-          <b-table-column field="role" label="Role" v-slot="props">
-            {{ roles.find(r => r.code === props.row.role).description }}
+          <b-table-column field="role" label="Role" sortable searchable :custom-search="filterByRole">
+            <template v-slot="props">
+              {{ roles.find(r => r.code === props.row.role).description }}
+            </template>
+            <template #searchable="props">
+              <b-input v-model="props.filters.role" placeholder="Filter..." size="is-small" />
+            </template>
           </b-table-column>
-          <b-table-column field="credit" label="Credit" v-slot="props">
+          <b-table-column field="credit" label="Credit" v-slot="props" sortable>
             {{ props.row.credit }}
           </b-table-column>
-          <b-table-column field="debt" label="Debt" v-slot="props">
+          <b-table-column field="debt" label="Debt" v-slot="props" sortable>
             {{ props.row.debt }}
           </b-table-column>
-          <b-table-column field="slotsUsed" label="Slots Free" v-slot="props">
+          <b-table-column field="slotsUsed" label="Slots Free" v-slot="props" sortable>
             {{ props.row.slotsFull - props.row.slotsUsed }}
           </b-table-column>
-          <b-table-column field="slotsFull" label="Slots Full" v-slot="props">
+          <b-table-column field="slotsFull" label="Slots Full" v-slot="props" sortable>
             {{ props.row.slotsFull }}
-          </b-table-column>
-          <b-table-column field="previousListOrder" label="Previous List Order" v-slot="props">
-            {{ props.row.previousListOrder }}
           </b-table-column>
         </b-table>
       </div>
@@ -116,6 +128,17 @@ export default {
     closeAccountEditDialog() {
       this.accountBeingEdited = undefined;
       this.editDialogIsVisible = false;
+    },
+    filterByNation(row, input) {
+      return row.rulerName.toLowerCase().includes(input.toLowerCase())
+        || row.nationName.toLowerCase().includes(input.toLowerCase());
+    },
+    filterByRole(row, input) {
+      const rolesMatchingInput = this.roles
+        .filter(role => role.description.toLowerCase().includes(input.toLowerCase()))
+        .map(role => role.code);
+      
+      return rolesMatchingInput.includes(row.role);
     }
   }
 }
