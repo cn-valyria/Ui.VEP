@@ -95,16 +95,17 @@ group by receiving_nation_id
         using var sqlConnection = new MySqlConnection(_connectionString);
         const string createAccountQuery = @"
 insert into account (
-nation_id,
-discord,
-discord_id,
-psw,
-va,
-fm,
-fac,
-dra
+    nation_id,
+    discord,
+    discord_id,
+    psw,
+    va,
+    fm,
+    fac,
+    dra,
+    date_added
 )
-values (@nation_id, @discord, @discord_id, @psw, @va, @fm, @fac, @dra)";
+values (@nation_id, @discord, @discord_id, @psw, @va, @fm, @fac, @dra, now())";
 
         await sqlConnection.ExecuteAsync(createAccountQuery, new
         {
@@ -132,13 +133,13 @@ values (@nation_id, @discord, @discord_id, @psw, @va, @fm, @fac, @dra)";
         const string query = @"
 update vep_db.account
 set
-discord = @discord,
-discord_id = @discord_id,
-psw = @unique_code,
-va = @role,
-fm = @has_fm,
-fac = @has_fac,
-dra = @has_dra
+    discord = @discord,
+    discord_id = @discord_id,
+    psw = @unique_code,
+    va = @role,
+    fm = @has_fm,
+    fac = @has_fac,
+    dra = @has_dra
 where id = @id";
 
         await sqlConnection.ExecuteAsync(query, new
@@ -162,26 +163,26 @@ where id = @id";
         using var sqlConnection = new MySqlConnection(_connectionString);
         const string auditQuery = @"
 insert into account_removed (
-`nation_id`, 
-`discord`, 
-`discord_id`, 
-`psw`, 
-`va`, 
-`fm`, 
-`fac`, 
-`dra`, 
-`removed_on`
+    `nation_id`, 
+    `discord`, 
+    `discord_id`, 
+    `psw`, 
+    `va`, 
+    `fm`, 
+    `fac`, 
+    `dra`, 
+    `removed_on`
 )
 select
-`nation_id`, 
-`discord`, 
-`discord_id`, 
-`psw`, 
-`va`, 
-`fm`, 
-`fac`, 
-`dra`, 
-curdate()
+    `nation_id`, 
+    `discord`, 
+    `discord_id`, 
+    `psw`, 
+    `va`, 
+    `fm`, 
+    `fac`, 
+    `dra`, 
+    now()
 from account
 where id = @id";
         await sqlConnection.ExecuteAsync(auditQuery, new { id = accountId });
