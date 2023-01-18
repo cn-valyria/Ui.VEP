@@ -150,6 +150,11 @@ img#dragons-illustration {
 <script>
 export default {
   name: 'IndexPage',
-  auth: false
+  auth: false,
+  created() {
+    if (this.$route.query.auth && this.$route.query.auth === "failed") {
+      this.$toast.error("You can't access that page until you're logged in. Please log into your account, or contact VEP management to create one for you.");
+    }
+  }
 }
 </script>

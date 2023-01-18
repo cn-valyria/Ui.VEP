@@ -7,7 +7,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'cn-vep',
+    title: 'Valyrian Exchange Program',
     htmlAttrs: {
       lang: 'en',
     },
@@ -80,6 +80,9 @@ export default {
           property: false
         }
       }
+    },
+    redirect: {
+      login: '/?auth=failed'
     }
   },
 
