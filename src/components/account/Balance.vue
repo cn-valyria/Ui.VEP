@@ -52,7 +52,7 @@ export default {
       } else if (this.balance === this.credit) {
         return "Credit";
       } else {
-        return "Debt;"
+        return "Debt"
       }
     },
     balanceType() {
@@ -94,7 +94,7 @@ export default {
       }
     },
     positivityIndicator() {
-      if (this.balance !== 1) {
+      if (this.balance !== 1 && this.balanceCategory !== "Even") {
         return this.balanceCategory === "Credit" ? "+" : "-";
       } else {
         return "";

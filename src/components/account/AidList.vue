@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="account.slotsFree === 0" class="box">
+    <div v-if="slotsFree === 0" class="box py-6">
       <div class="content has-text-centered">
         <h5>You are not expected to interact with VEP today</h5>
         <p>
@@ -79,6 +79,10 @@ export default {
     aidList: []
   },
   computed: {
+    slotsFree() {
+      this.$log.debug(this.account);
+      return this.account.slotsFull - this.account.slotsUsed;
+    },
     owesCash() {
       const rolesThatSendCash = [ACCOUNT_ROLE_CODES.buyer, ACCOUNT_ROLE_CODES.cashDonor, ACCOUNT_ROLE_CODES.temporaryDonor];
       return rolesThatSendCash.includes(this.account.role) && this.account.credit === 0;

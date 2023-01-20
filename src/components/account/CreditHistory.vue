@@ -26,7 +26,7 @@
             {{ props.row.type }}
           </b-table-column>
           <b-table-column field="status" label="Status" v-slot="props">
-            {{ toAidStatusDescription(props.row.status) }}
+            {{ props.row.otherNation !== null ? toAidStatusDescription(props.row.status) : "Active" }}
           </b-table-column>
           <b-table-column field="money" label="Money" v-slot="props">
             {{ props.row.money !== null ? props.row.money : "N/A" }}
