@@ -5,14 +5,19 @@
         <img src="~/assets/img/logo.png" />
       </a>
 
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <a
+        role="button"
+        class="navbar-burger"
+        :class="{ 'is-active': dropdownIsVisible }"
+        @click="dropdownIsVisible = !dropdownIsVisible"
+      >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
 
-    <div class="navbar-menu">
+    <div class="navbar-menu" :class="{ 'is-active': dropdownIsVisible }">
       <div class="navbar-start">
         <NuxtLink to="/" class="navbar-item">Home</NuxtLink>
         <a class="navbar-item">How It Works</a>
@@ -48,11 +53,19 @@
   </nav>
 </template>
 
+<style>
+/* I like the divider, even on mobile, so force it to always show */
+.navbar-divider {
+  display: block !important;
+}
+</style>
+
 <script>
 import { mapGetters } from 'vuex';
 
 export default {
   data: () => ({
+    dropdownIsVisible: false,
     loginFormIsVisible: false
   }),
   computed: {
