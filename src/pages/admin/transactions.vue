@@ -8,40 +8,39 @@
     </div>
     <div class="container">
       <div class="section">
-        <div class="columns">
-          <div class="column">
-            <div class="field">
-              <label class="label">Sent By</label>
-              <div class="control">
-                <input class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label class="label">Received By</label>
-              <div class="control">
-                <input class="input" type="search" placeholder="Nation, Ruler, or Alliance name" />
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label class="label">Since</label>
-              <div class="control">
-                <input class="input" type="date" />
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label class="label">Until</label>
-              <div class="control">
-                <input class="input" type="date" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <b-field grouped>
+          <b-field label="Sent By" expanded>
+            <b-input v-model="filters.sentBy"></b-input>
+          </b-field>
+          <b-field label="Received By" expanded>
+            <b-input v-model="filters.receivedBy"></b-input>
+          </b-field>
+          <b-field label="Since" grouped expanded>
+            <b-datepicker v-model="filters.sentSince" :mobile-native="false">
+              <template v-slot:trigger>
+                <b-button icon-left="calendar-today" type="is-link" />
+              </template>
+              <template v-slot:default>
+                <b-button type="is-white" @click="filters.sentSince = null">Clear</b-button>
+              </template>
+            </b-datepicker>
+            <b-input expanded readonly :value="filterSinceString"></b-input>
+          </b-field>
+          <b-field label="Until" grouped expanded>
+            <b-datepicker v-model="filters.sentUntil" :mobile-native="false">
+              <template v-slot:trigger>
+                <b-button icon-left="calendar-today" type="is-link" />
+              </template>
+              <template v-slot:default>
+                <b-button type="is-white" @click="filters.sentUntil = null">Clear</b-button>
+              </template>
+            </b-datepicker>
+            <b-input expanded readonly :value="filterUntilString"></b-input>
+          </b-field>
+          <p class="control">
+            <b-button label="Filter" type="is-primary" style="margin-top: 32px" @click="changePage(1)" />
+          </p>
+        </b-field>
         <div class="tabs is-boxed">
           <ul>
             <li :class="{ 'is-active': currentTab === TRANSACTION_TYPES.aidBased }">
@@ -56,8 +55,17 @@
             </li>
           </ul>
         </div>
-        <div v-if="currentTab === TRANSACTION_TYPES.aidBased" class="table-container">
-          <b-table :data="aidBasedTransactions" :loading="tableIsLoading">
+        <div v-if="currentTab === TRANSACTION_TYPES.aidBased">
+          <b-table
+            :data="aidBasedTransactions"
+            :loading="tableIsLoading"
+
+            paginated 
+            backend-pagination 
+            :total="currentTransactionsPage.totalCount"
+            :per-page="limit"
+            @page-change="changePage"
+          >
             <b-table-column field="id" label="Actions" width="140px" v-slot="props">
               <div class="buttons are-small">
                 <button class="button is-info" @click="editTransaction(props.row, TRANSACTION_TYPES.aidBased)">View</button>
@@ -99,9 +107,18 @@
             </template>
           </b-table>
         </div>
-        <div v-if="currentTab === TRANSACTION_TYPES.manual" class="table-container">
+        <div v-if="currentTab === TRANSACTION_TYPES.manual">
           <button class="button is-success" @click="createTransaction()">Create</button>
-          <b-table :data="manualTransactions" :loading="tableIsLoading">
+          <b-table
+            :data="manualTransactions"
+            :loading="tableIsLoading"
+
+            paginated 
+            backend-pagination 
+            :total="currentTransactionsPage.totalCount"
+            :per-page="limit"
+            @page-change="changePage"
+          >
             <b-table-column field="id" label="Actions" width="140px" v-slot="props">
               <div class="buttons are-small">
                 <button class="button is-info" @click="editTransaction(props.row, TRANSACTION_TYPES.manual)">Edit</button>
@@ -137,110 +154,6 @@
             </template>
           </b-table>
         </div>
-        <div class="columns">
-          <div class="column is-four-fifths">
-            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-              <a class="pagination-previous" @click="changePage(currentPage - 1)">Previous</a>
-              <a class="pagination-next" @click="changePage(currentPage + 1)">Next</a>
-              <ul class="pagination-list">
-                <li>
-                  <a class="pagination-link" :class="{ 'is-current': currentPage === 1 }" @click="changePage(1)">
-                    1
-                  </a>
-                </li>
-                <li v-if="currentPage <= 3 && totalPages >= 2">
-                  <a class="pagination-link" :class="{ 'is-current': currentPage === 2 }" @click="changePage(2)">
-                    2
-                  </a>
-                </li>
-                <li v-if="currentPage <= 3 && totalPages >= 3">
-                  <a class="pagination-link" :class="{ 'is-current': currentPage === 3 }" @click="changePage(3)">
-                    3
-                  </a>
-                </li>
-                <li v-if="currentPage <= 3 && totalPages >= 4">
-                  <a class="pagination-link" @click="changePage(4)">4</a>
-                </li>
-                <li v-if="currentPage <= 3 && totalPages >= 5">
-                  <a class="pagination-link" @click="changePage(5)">5</a>
-                </li>
-                <li v-if="currentPage <= 3 && totalPages >= 7">
-                  <span class="pagination-link">&hellip;</span>
-                </li>
-                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <span class="pagination-link">&hellip;</span>
-                </li>
-                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <a class="pagination-link" @click="changePage(currentPage - 1)">
-                    {{ currentPage - 1 }}
-                  </a>
-                </li>
-                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <a class="pagination-link is-current">
-                    {{ currentPage }}
-                  </a>
-                </li>
-                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <a class="pagination-link" @click="changePage(currentPage + 1)">
-                    {{ currentPage + 1 }}
-                  </a>
-                </li>
-                <li v-if="currentPage > 3 && totalPages > 6 && totalPages - currentPage > 2">
-                  <span class="pagination-link">&hellip;</span>
-                </li>
-                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
-                  <span class="pagination-link">&hellip;</span>
-                </li>
-                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
-                  <a class="pagination-link" @click="changePage(totalPages - 4)">
-                    {{ totalPages - 4 }}
-                  </a>
-                </li>
-                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
-                  <a class="pagination-link" @click="changePage(1)">
-                    {{ totalPages - 3 }}
-                  </a>
-                </li>
-                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
-                  <a
-                    class="pagination-link" 
-                    :class="{ 'is-current': currentPage === totalPages } - 2"
-                    @click="changePage(totalPages - 2)"
-                  >
-                    {{ totalPages - 2 }}
-                  </a>
-                </li>
-                <li v-if="totalPages > 6 && totalPages - currentPage <= 2">
-                  <a
-                    class="pagination-link"
-                    :class="{ 'is-current': currentPage === totalPages } - 1"
-                    @click="changePage(totalPages - 1)"
-                  >
-                    {{ totalPages - 1 }}
-                  </a>
-                </li>
-                <li v-if="totalPages >= 6">
-                  <a
-                    class="pagination-link"
-                    :class="{ 'is-current': currentPage === totalPages }"
-                    @click="changePage(totalPages)"
-                  >
-                    {{ totalPages }}
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="column">
-            <div class="select">
-              <select v-model="limit">
-                <option v-for="option in limitOptions" :key="option">
-                  {{ option }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <AdminAidBasedTransactionDialog
@@ -259,6 +172,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import dateFormat from "dateformat";
 import { TRANSACTION_TYPES } from "~/infrastructure/constants";
 import { transactionClassifications } from '~/infrastructure/dataLists';
 
@@ -275,7 +189,13 @@ export default {
     manualDialogIsVisible: false,
     transactionBeingEdited: undefined,
     transactionIdBeingDeleted: 0,
-    classifications: transactionClassifications
+    classifications: transactionClassifications,
+    filters: {
+      sentBy: null,
+      receivedBy: null,
+      sentSince: null,
+      sentUntil: null
+    }
   }),
   computed: {
     ...mapState({
@@ -295,6 +215,12 @@ export default {
     },
     tabIsManual() {
       return this.currentTab === TRANSACTION_TYPES.manual;
+    },
+    filterSinceString() {
+      return this.filters.sentSince ? dateFormat(this.filters.sentSince, "mm/dd/yyyy") : "";
+    },
+    filterUntilString() {
+      return this.filters.sentUntil ? dateFormat(this.filters.sentUntil, "mm/dd/yyyy") : "";
     }
   },
   async created() {
@@ -322,7 +248,12 @@ export default {
       try {
         await this.reloadCurrentTransactionsPage({
           type: this.currentTab,
-          filter: {},
+          filter: {
+            sentBy: this.filters.sentBy,
+            receivedBy: this.filters.receivedBy,
+            sentSince: this.filters.sentSince,
+            sentUntil: this.filters.sentUntil
+          },
           limit: this.limit,
           offset: this.limit * (this.currentPage - 1)
         });
