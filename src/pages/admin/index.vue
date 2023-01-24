@@ -40,25 +40,34 @@
         <div class="tile is-ancestor">
           <div class="tile is-parent">
             <article class="tile is-child box">
-              <p class="title">Transactions Per Day</p>
-              <div class="content">
-                <ApexChart width="100%" type="line" :options="options" :series="series"></ApexChart>
-              </div>
+              <admin-dashboard-total-transactions-tile :data="transactionsPerDay" />
             </article>
           </div>
           <div class="tile is-parent">
             <article class="tile is-child box">
-              <p class="title">Foo</p>
-              <p class="subtitle">Bar</p>
+              <admin-dashboard-pending-credit-tile :data="pendingCreditByAlliance" />
             </article>
           </div>
           <div class="tile is-parent">
             <article class="tile is-child box">
-              <p class="title">Third column</p>
-              <p class="subtitle">With some content</p>
-              <div class="content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.</p>
-              </div>
+              <admin-dashboard-accounts-by-role :data="accountsByRole" />
+            </article>
+          </div>
+        </div>
+        <div class="tile is-ancestor">
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <admin-dashboard-total-slots-by-role :data="totalSlotsByRole" />
+            </article>
+          </div>
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <admin-dashboard-free-slots-by-list :data="freeSlotsByList" />
+            </article>
+          </div>
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <admin-dashboard-accounts-by-alliance :data="accountsByAlliance" />
             </article>
           </div>
         </div>
@@ -72,33 +81,64 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'AdminIndex',
-  components: {
-    ApexChart: () => import('vue-apexcharts')
-  },
   data: () => ({
-    options: {
-      chart: {
-        toolbar: {
-          show: false
-        }
-      },
-      stroke: {
-        curve: "smooth"
-      },
-      xaxis: {
-        categories: ["Jan-19", "Jan-20", "Jan-21", "Jan-22", "Jan-23"]
-      },
-      yaxis: {
-        min: 0,
-        max: 6,
-        tickAmount: 5
-      }
-    },
-    series: [
+    transactionsPerDay: [
+      { date: "Jan-19", transactions: 3 },
+      { date: "Jan-20", transactions: 2 },
+      { date: "Jan-21", transactions: 5 },
+      { date: "Jan-22", transactions: 1 },
+      { date: "Jan-23", transactions: 2 }
+    ],
+    pendingCreditByAlliance: [
       {
-        name: "Transactions",
-        data: [3, 2, 5, 1, 2]
+        alliance: "NATO",
+        pendingCredit: [
+          { dateRange: "0-2 Days", credit: 27 },
+          { dateRange: "3-5 Days", credit: 9 },
+          { dateRange: "6-8 Days", credit: 0 },
+          { dateRange: "9+ Days", credit: 9 }
+        ]
+      },
+      {
+        alliance: "CCC",
+        pendingCredit: [
+          { dateRange: "0-2 Days", credit: 36 },
+          { dateRange: "3-5 Days", credit: 18 },
+          { dateRange: "6-8 Days", credit: 9 },
+          { dateRange: "9+ Days", credit: 0 }
+        ]
+      },
+      {
+        alliance: "FTW",
+        pendingCredit: [
+          { dateRange: "0-2 Days", credit: 9 },
+          { dateRange: "3-5 Days", credit: 9 },
+          { dateRange: "6-8 Days", credit: 9 },
+          { dateRange: "9+ Days", credit: 9 }
+        ]
       }
+    ],
+    accountsByRole: [
+      { role: "Buyer", count: 8 },
+      { role: "Seller", count: 7 },
+      { role: "On Hold", count: 2 }
+    ],
+    totalSlotsByRole: [
+      { role: "Buyer", totalSlots: 48 },
+      { role: "Seller", totalSlots: 42 },
+      { role: "Donor", totalSlots: 0 },
+      { role: "Farm", totalSlots: 0 }
+    ],
+    freeSlotsByList: [
+      { list: "Outgoing Cash", freeSlots: 12 },
+      { list: "Incoming Cash", freeSlots: 5 },
+      { list: "Outgoing Tech", freeSlots: 11 },
+      { list: "Incoming Tech", freeSlots: 5 }
+    ],
+    accountsByAlliance: [
+      { allianceName: "NATO", count: 10 },
+      { allianceName: "Christian Coalition of Countries", count: 4 },
+      { allianceName: "Freehold of The Wolves", count: 3 }
     ]
   }),
   computed: {
