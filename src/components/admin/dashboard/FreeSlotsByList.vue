@@ -24,18 +24,20 @@ export default {
           }
         },
         plotOptions: {
-          horizontal: false
+          bar: {
+            distributed: true
+          }
         },
         xaxis: {
-          categories: this.data.map(x => x.list)
+          categories: this.data && this.data.map(x => x.listName) || []
         },
         yaxis: {
           title: {
             text: "Free Aid Slots"
           }
         },
-        fill: {
-          opacity: 1
+        legend: {
+          show: false
         }
       };
     },
@@ -43,7 +45,7 @@ export default {
       return [
         {
           name: "Free Aid Slots",
-          data: this.data.map(x => x.freeSlots)
+          data: this.data && this.data.map(x => x.freeSlots) || []
         }
       ]
     }

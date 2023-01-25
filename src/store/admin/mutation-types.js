@@ -1,3 +1,6 @@
+// Index
+export const LOAD_DASHBOARD = 'LOAD_DASHBOARD';
+
 // Accounts
 export const CLEAR_ACCOUNTS = 'CLEAR_ACCOUNTS';
 export const ADD_ACCOUNTS = 'ADD_ACCOUNTS';

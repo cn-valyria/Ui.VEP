@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import dateFormat from 'dateformat';
+
 export default {
   props: {
     data: []
@@ -27,7 +29,7 @@ export default {
           curve: "smooth"
         },
         xaxis: {
-          categories: this.data.map(x => x.date)
+          categories: this.data && this.data.map(x => dateFormat(new Date(x.dayTxnRecorded), "mmm-dd")) || []
         }
       };
     },
@@ -35,7 +37,7 @@ export default {
       return [
         {
           name: "Transactions",
-          data: this.data.map(x => x.transactions)
+          data: this.data && this.data.map(x => x.txnCount) || []
         }
       ];
     }

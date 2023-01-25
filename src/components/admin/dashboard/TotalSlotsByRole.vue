@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { accountRoles } from '~/infrastructure/dataLists';
+
 export default {
   props: {
     data: []
@@ -24,18 +26,20 @@ export default {
           }
         },
         plotOptions: {
-          horizontal: false
+          bar: {
+            distributed: true
+          }
         },
         xaxis: {
-          categories: this.data.map(x => x.role)
+          categories: this.data && this.data.map(x => accountRoles.find(role => role.code === x.role).description) || []
         },
         yaxis: {
           title: {
             text: "Total Aid Slots"
           }
         },
-        fill: {
-          opacity: 1
+        legend: {
+          show: false
         }
       };
     },
@@ -43,7 +47,7 @@ export default {
       return [
         {
           name: "Total Aid Slots",
-          data: this.data.map(x => x.totalSlots)
+          data: this.data && this.data.map(x => x.totalSlots) || []
         }
       ]
     }

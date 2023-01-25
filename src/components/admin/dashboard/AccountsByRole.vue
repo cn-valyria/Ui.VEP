@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { accountRoles } from '~/infrastructure/dataLists';
+
 export default {
   props: {
     data: []
@@ -18,11 +20,11 @@ export default {
   computed: {
     options() {
       return {
-        labels: this.data.map(x => x.role)
+        labels: this.data && this.data.map(x => accountRoles.find(role => role.code === x.role).description) || []
       };
     },
     series() {
-      return this.data.map(x => x.count);
+      return this.data && this.data.map(x => x.totalAccounts) || [];
     }
   }
 }
