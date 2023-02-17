@@ -90,7 +90,7 @@ export default {
     expectsCash() {
       if (this.account.role === ACCOUNT_ROLE_CODES.seller || this.account.role === ACCOUNT_ROLE_CODES.probationarySeller) {
         return this.account.debt === 0;
-      } else if (this.account.role === ACCOUNT_ROLE_CODES.cashCollector, ACCOUNT_ROLE_CODES.temporaryCollector) {
+      } else if ([ACCOUNT_ROLE_CODES.cashCollector, ACCOUNT_ROLE_CODES.temporaryCollector].includes(this.account.role)) {
         return this.account.credit === 0;
       } else {
         return false;
@@ -115,6 +115,11 @@ export default {
   methods: {
     getAidNationLink(nation) {
       return `https://www.cybernations.net/aid_form.asp?Nation_ID=${nation.nationId}&bynation=${this.account.nationId}`
+    }
+  },
+  watch: {
+    account() {
+      this.$log.debug(this.expectsCash, this.expectsTech);
     }
   }
 }

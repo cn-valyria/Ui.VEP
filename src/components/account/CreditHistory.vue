@@ -74,7 +74,7 @@ export default {
       let cashOrTech, receivedOrSent;
       if (txn.money !== null) {
         cashOrTech = txn.money > 0 ? "$9m" : "100 tech";
-        receivedOrSent = txn.transactionType === "Incoming" ? "received" : "sent";
+        receivedOrSent = txn.type === "Incoming" ? "received" : "sent";
       } else {
         const cash = `$${txn.rate}m`;
         const tech = `${txn.rate / 9 * 100} tech`;
