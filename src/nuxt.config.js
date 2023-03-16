@@ -37,7 +37,7 @@ export default {
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['@/plugins/axios.js'],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -71,10 +71,18 @@ export default {
   auth: {
     strategies: {
       local: {
+        scheme: 'refresh',
         endpoints: {
           login: { url: 'user/authenticate', method: 'post', propertyName: 'data' },
+          refresh: { url: 'user/refresh', method: 'post', propertyName: 'data' },
           user: { url: 'user/account', method: 'get', propertyName: 'data' },
           logout: false
+        },
+        token: {
+          property: 'access_token'
+        },
+        refreshToken: {
+          property: 'refresh_token'
         },
         user: {
           property: false

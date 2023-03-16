@@ -54,6 +54,7 @@
 
 <script>
 export default {
+  name: "LoginVepUser",
   props: {
     show: Boolean
   },
