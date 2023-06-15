@@ -86,17 +86,17 @@
             <div class="field is-horizontal">
               <div class="field-body">
                 <div class="field">
-                  <label class="label">Discord ID</label>
+                  <label class="label">Discord Username</label>
                   <div class="control">
                     <input 
                       v-model="accountBeingEdited.discord" 
                       class="input" 
                       type="text"
-                      placeholder="e.g. username:1234" />
+                      placeholder="e.g. username or username#1234" />
                   </div>
                 </div>
                 <div class="field">
-                  <label class="label">Discord Discriminator</label>
+                  <label class="label">Discord User ID</label>
                   <div class="control">
                     <input 
                       v-model="accountBeingEdited.discordUniqueId" 
