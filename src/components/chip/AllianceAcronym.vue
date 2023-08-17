@@ -15,6 +15,13 @@ export default {
       { code: "CCC", name: "Christian Coalition Of Countries" },
       { code: "FTW", name: "Freehold of the Wolves" },
       { code: "NATO", name: "NATO" }
+      { code: "MHA", name: "Mostly Harmless Alliance" }
+      { code: "FARK", name: "Fark" }
+      { code: "NG", name: "Non Grata" }
+      { code: "FAN", name: "Federation of Armed Nations" }
+      { code: "RIA", name: "Random Insanity Alliance" }
+      { code: "OG", name: "Old Guard" }
+      { code: "TIO", name: "The Imperial Order" }
     ]
   }),
   computed: {
