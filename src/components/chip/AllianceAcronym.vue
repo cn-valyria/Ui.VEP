@@ -13,8 +13,15 @@ export default {
   data: () => ({
     allianceAcronyms: [
       { code: "CCC", name: "Christian Coalition Of Countries" },
+      { code: "FAN", name: "Federation of Armed Nations" },
+      { code: "FARK", name: "Fark" },      
       { code: "FTW", name: "Freehold of the Wolves" },
-      { code: "NATO", name: "NATO" }
+      { code: "MHA", name: "Mostly Harmless Alliance" },
+      { code: "NATO", name: "NATO" },
+      { code: "NG", name: "Non Grata" },
+      { code: "OG", name: "Old Guard" },
+      { code: "RIA", name: "Random Insanity Alliance" },
+      { code: "TIO", name: "The Imperial Order" }
     ]
   }),
   computed: {
