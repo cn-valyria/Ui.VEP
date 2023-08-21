@@ -10,7 +10,7 @@
       <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
       <div class="section">
         <b-tabs>
-          <b-tab-item v-for="list in lists" :label="list.name" type="is-boxed">
+          <b-tab-item v-for="list in lists" v-bind:key="list.id" :label="list.name" type="is-boxed">
             <div class="content">
               <h3>Message Template</h3>
               <b-field label="Carbon Copy Rulers">
@@ -77,7 +77,7 @@ export default {
     }
   },
   async created() {
-    if (!this.loggedInUser.roles.some(role => role.name === "Admin")) {
+    if (!this.loggedInUser.roles.some(role => role.name === "Admin" || role.name === "Admin - Lists")) {
       this.$log.warn("Tried to access an admin page without the admin role.");
       this.$router.push("/");
       return;

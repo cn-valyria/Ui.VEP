@@ -28,12 +28,17 @@
           <a class="navbar-link">Account</a>
           <div class="navbar-dropdown is-right">
             <NuxtLink :to="accountUrl" class="navbar-item">My Account</NuxtLink>
+            <div v-if="accountIsAdmin || accountCanSeeLists">
+              <hr class="navbar-divider" />
+            </div>
             <div v-if="accountIsAdmin">
               <hr class="navbar-divider" />
               <div class="navbar-item is-uppercase is-size-7">Admin Portal</div>
               <NuxtLink to="/admin" class="navbar-item">Home</NuxtLink>
               <NuxtLink to="/admin/accounts" class="navbar-item">Accounts</NuxtLink>
               <NuxtLink to="/admin/transactions" class="navbar-item">Transactions</NuxtLink>
+            </div>
+            <div v-if="accountIsAdmin || accountCanSeeLists">
               <NuxtLink to="/admin/lists" class="navbar-item">Lists</NuxtLink>
             </div>
             <hr class="navbar-divider" />
@@ -78,6 +83,9 @@ export default {
     },
     accountIsAdmin() {
       return this.loggedInUser.roles.some(role => role.name === "Admin");
+    },
+    accountCanSeeLists() {
+      return this.loggedInUser.roles.some(role => role.name === "Admin - Lists");
     }
   },
   methods: {
