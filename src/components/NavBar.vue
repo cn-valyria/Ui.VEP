@@ -20,7 +20,7 @@
     <div class="navbar-menu" :class="{ 'is-active': dropdownIsVisible }">
       <div class="navbar-start">
         <NuxtLink to="/" class="navbar-item">Home</NuxtLink>
-        <NuxtLink to="https://docs.google.com/document/d/1xsOzQjIb98aJwvHr4-AZqfUlCXLcVYAlXihZnvwBQoc/edit?tab=t.0" class="navbar-item">How It Works</NuxtLink>
+        <a href="https://docs.google.com/document/d/1xsOzQjIb98aJwvHr4-AZqfUlCXLcVYAlXihZnvwBQoc/edit?tab=t.0" target="_blank" class="navbar-item">How It Works</a>
       </div>
 
       <div class="navbar-end">
